@@ -15,9 +15,11 @@ let simple = hexStringToByteArray(simpleHex)
 let msgPackCase = hexStringToByteArray(msgPackCaseHex)
 
 println("Simple MsgPack")
-println(unPackByteArray(simple))
+var result:Any = unPackByteArray(simple)
+println(result)
 
 println("MsgPack test case")
-println(unPackByteArray(msgPackCase))
+result = unPackByteArray(msgPackCase)
+println(result)
 
 

@@ -8,26 +8,38 @@
 
 import Foundation
 
-func swiftByteArray(data:NSData)->UInt8[]
+func swiftByteArray(data:NSData)->[UInt8]
 {
-    var bytes = UInt8[](count:data.length, repeatedValue: 0)
+    var bytes = [UInt8](count:data.length, repeatedValue: 0)
     CFDataGetBytes(data, CFRangeMake(0, data.length), &bytes)
     return bytes
 }
 
 func stringFromSlice(bytes:Slice<UInt8>)->String
 {
-    return NSString(bytes: Array(bytes) as UInt8[], length: bytes.count, encoding: NSUTF8StringEncoding)
+    var localBytes = Array(bytes)
+    localBytes.append(0)
+    let optionalString = localBytes.withUnsafePointerToElements
+        {
+            String.fromCString(reinterpretCast($0) as CString)
+        }
+    
+    if let string = optionalString
+    {
+        return string
+    }
+    
+    return ""
 }
 
 func dataFromSlice(bytes:Slice<UInt8>)->NSData
 {
-    return NSData(bytes: Array(bytes) as UInt8[], length: bytes.count)
+    return NSData(bytes: Array(bytes) as [UInt8], length: bytes.count)
 }
 
 func unPackByteArray(bytes:Array<UInt8>)->Array<AnyObject>
 {
-    var sliceBytes = bytes[0..bytes.count]
+    var sliceBytes = bytes[0..<bytes.count]
     var bytesRead:UInt = 0
     var returnArray:Array<AnyObject> = []
     while Int(bytesRead) < bytes.count
@@ -35,7 +47,7 @@ func unPackByteArray(bytes:Array<UInt8>)->Array<AnyObject>
         let results = parseBytes(sliceBytes)
         bytesRead += results.bytesRead
         returnArray.append(results.value)
-        sliceBytes = bytes[Int(bytesRead)..bytes.count]
+        sliceBytes = bytes[Int(bytesRead)..<bytes.count]
     }
     
     return returnArray
@@ -67,7 +79,7 @@ func parseBytes(bytesIn:Slice<UInt8>)->(value:AnyObject, bytesRead:UInt)
         return (value:arrayValues.value, bytesRead:arrayValues.bytesRead+1)
     case 0xa0...0xbf:
         let length = UInt(byte & 0x1F)
-        let str = dataFromSlice(bytes[0..Int(length)])
+        let str = stringFromSlice(bytes[0..<Int(length)])
         return (value:str, bytesRead:length+1)
     case 0xc0:          //nil type
         return ("",1)
@@ -147,16 +159,16 @@ func parseBytes(bytesIn:Slice<UInt8>)->(value:AnyObject, bytesRead:UInt)
 func parseInt(bytes:Slice<UInt8>, length:UInt)->Int
 {
     var myInt:Int = 0
-    var intBytes = bytes[0..Int(length)].reverse()
-    memcpy(&myInt, bytes, length)
+    var intBytes = bytes[0..<Int(length)].reverse()
+    memcpy(&myInt, Array<UInt8>(bytes), length)
     return myInt
 }
 
 func parseUInt(bytes:Slice<UInt8>, length:UInt)->UInt
 {
     var uint:UInt = 0
-    var intBytes = bytes[0..Int(length)].reverse()
-    memcpy(&uint, intBytes, length)
+    var intBytes = bytes[0..<Int(length)].reverse()
+    memcpy(&uint, Array<UInt8>(intBytes), length)
     return uint
 }
 
@@ -164,7 +176,7 @@ func parseFloat(bytes:Slice<UInt8>)->Float
 {
     //reverse bytes first?
     var f:Float = 0.0
-    var floatBytes = bytes[0..4].reverse()
+    var floatBytes = Array<UInt8>(bytes[0..<4].reverse())
     memcpy(&f, floatBytes, 4)
     return f
 }
@@ -173,7 +185,7 @@ func parseDouble(bytes:Slice<UInt8>)->Double
 {
     //reverse bytes first?
     var d:Double = 0.0
-    var doubleBytes = bytes[0..8].reverse()
+    var doubleBytes = Array<UInt8>(bytes[0..<8].reverse())
     memcpy(&d, doubleBytes, 8)
     return d
 }
@@ -181,17 +193,17 @@ func parseDouble(bytes:Slice<UInt8>)->Double
 func parseBin(bytes:Slice<UInt8>, length:UInt) ->Int
 {
     var bin:Int = 0
-    memcpy(&bin, bytes, length)
+    memcpy(&bin, Array<UInt8>(bytes), length)
     return bin
 }
 
 func parseMap(bytes:Slice<UInt8>, headerSize:UInt)->(value:Dictionary<String, AnyObject>, bytesRead:UInt)
 {
     var elements:UInt = 0
-    var headerBytes = bytes[0..Int(headerSize)].reverse()
+    var headerBytes = Array<UInt8>(bytes[0..<Int(headerSize)].reverse())
     memcpy(&elements, headerBytes, headerSize)
     
-    var results = parseMapWithElements(bytes[Int(headerSize)..bytes.count], elements)
+    var results = parseMapWithElements(bytes[Int(headerSize)..<bytes.count], elements)
     
     return (results.value, results.bytesRead+headerSize)
 }
@@ -201,19 +213,19 @@ func parseMapWithElements(bytesIn:Slice<UInt8>, elements:UInt)->(value:Dictionar
     var bytes = bytesIn
     var dict = Dictionary<String, AnyObject>(minimumCapacity: Int(elements))
     var bytesRead:UInt = 0
-    for i in 0..elements
+    for i in 0..<elements
     {
         let keyResults = parseBytes(bytes)
-        bytesRead += keyResults.bytesRead;
+        bytesRead += keyResults.bytesRead
         
-        let key = NSString(data: keyResults.value as NSData, encoding: NSUTF8StringEncoding)
-        bytes = bytes[Int(keyResults.bytesRead)..bytes.count]
+        let key:String = keyResults.value as String
+        bytes = bytes[Int(keyResults.bytesRead)..<bytes.count]
         
         let valueResults = parseBytes(bytes)
         bytesRead += valueResults.bytesRead;
         let value : AnyObject = valueResults.value
         
-        bytes = bytes[Int(valueResults.bytesRead)..bytes.count]
+        bytes = bytes[Int(valueResults.bytesRead)..<bytes.count]
         dict[key] = value
     }
     
@@ -223,9 +235,9 @@ func parseMapWithElements(bytesIn:Slice<UInt8>, elements:UInt)->(value:Dictionar
 func parseArray(bytesIn:Slice<UInt8>, headerSize:UInt)->(value:AnyObject, bytesRead:UInt)
 {
     var elements:UInt = 0
-    var headerBytes = bytesIn[0..Int(headerSize)].reverse()
+    var headerBytes = Array<UInt8>(bytesIn[0..<Int(headerSize)].reverse())
     memcpy(&elements, headerBytes, headerSize)
-    let results = parseArrayWithElements(bytesIn[Int(headerSize)..bytesIn.count], elements)
+    let results = parseArrayWithElements(bytesIn[Int(headerSize)..<bytesIn.count], elements)
     
     return (results.value, results.bytesRead+headerSize)
 }
@@ -234,39 +246,37 @@ func parseArrayWithElements(bytesIn:Slice<UInt8>, elements:UInt)->(value:AnyObje
 {
     var bytesRead:UInt = 0
     var bytes = bytesIn
-    var array = AnyObject[]()
-    for i in 0..elements
+    var array = [AnyObject]()
+    for i in 0..<elements
     {
         let results = parseBytes(bytes)
         array.append(results.value)
-        bytes = bytes[Int(results.bytesRead)..bytes.count]
+        bytes = bytes[Int(results.bytesRead)..<bytes.count]
         bytesRead += results.bytesRead
     }
     
     return (array, bytesRead)
 }
 
-func parseStr(bytes:Slice<UInt8>, headerSize:UInt)->(value:NSData, bytesRead:UInt)
+func parseStr(bytes:Slice<UInt8>, headerSize:UInt)->(value:String, bytesRead:UInt)
 {
     var length:UInt = 0
-    var headerBytes = bytes[0..Int(headerSize)].reverse()
+    var headerBytes = Array<UInt8>(bytes[0..<Int(headerSize)].reverse())
     memcpy(&length, headerBytes, headerSize)
     
     if (headerSize+length < UInt(bytes.count))
     {
-        return (dataFromSlice(bytes[Int(headerSize)..Int(length+headerSize)]), length+headerSize)
+        return (stringFromSlice(bytes[Int(headerSize)..<Int(length+headerSize)]), length+headerSize)
     }
     
-    return (NSData(), 1)
+    return ("", 1)
 }
 
+///util
 func error(errorMessage:String)
 {
     println("error" + errorMessage)
 }
-
-
-///util
 
 extension String {
     subscript (i: Int) -> String
@@ -305,7 +315,7 @@ func byteToString(byte:UInt8) -> String
 {
     var string = ""
     var localByte = byte
-    for j in 0..2
+    for j in 0..<2
     {
         var letter = ""
         var tmp = localByte & 240
@@ -365,11 +375,11 @@ func hexStringToByteArray(stringIn:String) -> Array<UInt8>
         }
     }
     hexString = hexString.uppercaseString
-    var bytes = UInt8[]()
+    var bytes = [UInt8]()
     
     for var i:Int = 0; i < countElements(hexString); i += 2
     {
-        var sub = hexString[i..i+2]
+        var sub = hexString[i..<i+2]
         var byte:UInt8 = charPairToByte(sub)
         bytes.append(byte)
     }
