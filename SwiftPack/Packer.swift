@@ -8,6 +8,11 @@
 
 import Foundation
 
+func pack(thing:Any) -> [UInt8]
+{
+    return pack(thing, Array<UInt8>())
+}
+
 func pack(thing:Any, bytes:[UInt8]) -> [UInt8]
 {
     var localBytes = bytes
@@ -213,10 +218,10 @@ func packString(string:String, bytes:[UInt8]) -> [UInt8]
     let cString:[CChar]? = string.cStringUsingEncoding(NSUTF8StringEncoding)
     if let cStr = cString
     {
-        var length = Int32(countElements(cStr))
+        var length = Int32(countElements(cStr))-1
         if (length < 0x20)
         {
-            localBytes.append(UInt8(0xA0 & UInt8(length)))
+            localBytes.append(UInt8(0xA0 | UInt8(length)))
         }
         else
         {
@@ -255,7 +260,7 @@ func packArray(array:Array<Any>, bytes:[UInt8]) -> [UInt8]
     var items = Int32(countElements(array))
     if (items < 0x10)
     {
-        localBytes.append(UInt8(0x90 & UInt8(items)))
+        localBytes.append(UInt8(0x90 | UInt8(items)))
     }
     else
     {
@@ -285,7 +290,7 @@ func packDictionary(dict:Dictionary<String, Any>, bytes:[UInt8]) -> [UInt8]
     var elements = Int32(countElements(dict))
     if (elements < 0x10)
     {
-        localBytes.append(UInt8(0x80 & UInt8(elements)))
+        localBytes.append(UInt8(0x80 | UInt8(elements)))
     }
     else
     {

@@ -37,23 +37,33 @@ func dataFromSlice(bytes:Slice<UInt8>)->NSData
     return NSData(bytes: Array(bytes) as [UInt8], length: bytes.count)
 }
 
-func unPackByteArray(bytes:Array<UInt8>)->Array<AnyObject>
+func unPackByteArray(bytes:Array<UInt8>)->AnyObject
 {
     var sliceBytes = bytes[0..<bytes.count]
     var bytesRead:UInt = 0
     var returnArray:Array<AnyObject> = []
+    var useArray = false
+    
     while Int(bytesRead) < bytes.count
     {
         let results = parseBytes(sliceBytes)
         bytesRead += results.bytesRead
-        returnArray.append(results.value)
-        sliceBytes = bytes[Int(bytesRead)..<bytes.count]
+        if (!useArray && bytesRead == bytes.count)
+        {
+            return results.value
+        }
+        else
+        {
+            useArray = true
+            returnArray.append(results.value)
+            sliceBytes = bytes[Int(bytesRead)..<bytes.count]
+        }
     }
     
     return returnArray
 }
 
-func unPackData(data:NSData)->Array<AnyObject>
+func unPackData(data:NSData)->AnyObject
 {
     let bytes = swiftByteArray(data)
     return unPackByteArray(bytes)
