@@ -8,6 +8,7 @@
 
 import Foundation
 
+//@todo research the most effiecant array type for this
 func pack(thing:Any) -> [UInt8]
 {
     return pack(thing, Array<UInt8>())

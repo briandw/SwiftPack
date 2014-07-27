@@ -21,7 +21,7 @@ func stringFromSlice(bytes:Slice<UInt8>)->String
     localBytes.append(0)
     let optionalString = localBytes.withUnsafePointerToElements
         {
-            String.fromCString(reinterpretCast($0) as CString)
+            String.fromCString(reinterpretCast($0) as ConstUnsafePointer<CChar>)
         }
     
     if let string = optionalString
@@ -48,7 +48,7 @@ func unPackByteArray(bytes:Array<UInt8>)->AnyObject
     {
         let results = parseBytes(sliceBytes)
         bytesRead += results.bytesRead
-        if (!useArray && bytesRead == bytes.count)
+        if (!useArray && bytesRead == UInt(bytes.count))
         {
             return results.value
         }
