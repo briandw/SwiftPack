@@ -1,4 +1,4 @@
 SwiftPack
 =========
 
-A simple MsgPack unpacker in Swift
+A simple MsgPack library written in Swift 
