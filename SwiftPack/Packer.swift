@@ -82,15 +82,15 @@ func packUInt(uint:UInt64, bytes:[UInt8]) -> [UInt8]
 func packFixnum(uint:UInt8, bytes:[UInt8]) -> [UInt8]
 {
     var localBytes:Array<UInt8> = bytes
-    localBytes += uint
+    localBytes.append(uint);
     return localBytes
 }
 
 func packUInt8(uint:UInt8, bytes:[UInt8]) -> [UInt8]
 {
     var localBytes:Array<UInt8> = bytes
-    localBytes += 0xCC
-    localBytes += uint
+    localBytes.append(0xCC);
+    localBytes.append(uint);
     return localBytes
 }
 
@@ -98,7 +98,7 @@ func packUInt16(uint:UInt16, bytes:[UInt8]) -> [UInt8]
 {
     var localInt = uint
     var localBytes:Array<UInt8> = bytes
-    localBytes += 0xCD
+    localBytes.append(0xCD);
     
     return copyBytes(uint, 2, localBytes)
 }
@@ -106,7 +106,7 @@ func packUInt16(uint:UInt16, bytes:[UInt8]) -> [UInt8]
 func packUInt32(uint:UInt32, bytes:[UInt8]) -> [UInt8]
 {
     var localBytes:Array<UInt8> = bytes
-    localBytes += 0xCE
+    localBytes.append(0xCE);
     
     return copyBytes(uint, 4, localBytes)
 }
@@ -114,7 +114,8 @@ func packUInt32(uint:UInt32, bytes:[UInt8]) -> [UInt8]
 func packUInt64(uint:UInt64, bytes:[UInt8]) -> [UInt8]
 {
     var localBytes:Array<UInt8> = bytes
-    localBytes += 0xCF
+    localBytes.append(0xCF);
+    
     return copyBytes(uint, 8, localBytes)
 }
 
@@ -139,8 +140,8 @@ func packInt(int:Int64, bytes:[UInt8]) -> [UInt8]
 func packInt8(int:Int8, bytes:[UInt8]) -> [UInt8]
 {
     var localBytes:Array<UInt8> = bytes
-    localBytes += 0xD0
-    localBytes += UInt8(int)
+    localBytes.append(0xD0)
+    localBytes.append(UInt8(int))
     return localBytes
 }
 
@@ -148,7 +149,7 @@ func packInt16(int:Int16, bytes:[UInt8]) -> [UInt8]
 {
     var localInt = UInt16(int)
     var localBytes:Array<UInt8> = bytes
-    localBytes += 0xD1
+    localBytes.append(0xD1)
     
     return copyBytes(int, 2, localBytes)
 }
@@ -157,7 +158,7 @@ func packInt32(int:Int32, bytes:[UInt8]) -> [UInt8]
 {
     var localInt:UInt32 = UInt32(int)
     var localBytes:Array<UInt8> = bytes
-    localBytes += 0xD2
+    localBytes.append(0xD2);
     
     return copyBytes(int, 4, localBytes)
 }
@@ -166,7 +167,7 @@ func packInt64(int:Int64, bytes:[UInt8]) -> [UInt8]
 {
     var localInt:UInt64 = UInt64(int)
     var localBytes:Array<UInt8> = bytes
-    localBytes += 0xD3
+    localBytes.append(0xD3)
     
     return copyBytes(int, 8, localBytes)
 }
@@ -175,7 +176,7 @@ func packFloat(float:Float, bytes:[UInt8]) -> [UInt8]
 {
     var localFloat = float
     var localBytes:Array<UInt8> = bytes
-    localBytes += 0xCA
+    localBytes.append(0xCA)
     
     return copyBytes(localFloat, 4, localBytes)
 }
@@ -184,7 +185,7 @@ func packDouble(float:Double, bytes:[UInt8]) -> [UInt8]
 {
     var localFloat = float
     var localBytes:Array<UInt8> = bytes
-    localBytes += 0xCB
+    localBytes.append(0xCB)
     
     return copyBytes(localFloat, 8, localBytes)
 }
@@ -323,7 +324,7 @@ func lengthBytes(lengthIn:Int32) -> Array<UInt8>
     switch (length)
     {
         case 0..<0x10:
-            lengthBytes += (UInt8(length))
+            lengthBytes.append(UInt8(length))
             
         case 0x10..<0x100:
             lengthBytes = Array<UInt8>(count:2, repeatedValue:0)

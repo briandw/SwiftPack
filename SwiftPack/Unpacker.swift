@@ -19,16 +19,22 @@ func stringFromSlice(bytes:Slice<UInt8>)->String
 {
     var localBytes = Array(bytes)
     localBytes.append(0)
-    let optionalString = localBytes.withUnsafePointerToElements
-        {
-            String.fromCString(reinterpretCast($0) as ConstUnsafePointer<CChar>)
-        }
+/*
+    let optionalString:String = localBytes.withUnsafeBufferPointer(
+        {(body:UnsafeBufferPointer) -> String in
+            String.fromCString(body as UnsafePointer<CChar>)
+    });
+
+//    let optionalString = localBytes.withUnsafePointerToElements
+//        {
+//            String.fromCString(unsafeBitCast($0) as UnsafePointer<CChar>)
+//        }
     
     if let string = optionalString
     {
         return string
     }
-    
+*/
     return ""
 }
 
