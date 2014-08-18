@@ -302,7 +302,7 @@ extension String {
     }
 }
 
-func hexFromData(data:NSData) ->String
+func hexFromData(data:NSData) -> String
 {
     var string = ""
     let bytes = swiftByteArray(data)
