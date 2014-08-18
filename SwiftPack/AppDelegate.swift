@@ -11,6 +11,7 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate {
                             
     @IBOutlet weak var window: NSWindow!
+    @IBOutlet var decodedView: NSTextView!
 
 
     func applicationDidFinishLaunching(aNotification: NSNotification?) {
@@ -33,7 +34,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let clazz:AnyObject = classFromType(NSString.self)
         let items = pb.readObjectsForClasses([clazz], options:nil)
         
-        
+        for hexString in items
+        {
+            let bytes:Array<UInt8> = hexStringToByteArray(hexString as String)
+            var result:AnyObject = unPackByteArray(bytes)
+            decodedView.string = result.description
+        }
     }
 }
 
