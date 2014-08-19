@@ -381,7 +381,7 @@ func hexStringToByteArray(stringIn:String) -> Array<UInt8>
     {
         if (character != " ")
         {
-            hexString += character
+            hexString.append(character)
         }
     }
     hexString = hexString.uppercaseString
@@ -439,7 +439,7 @@ func charPairToByte(strIn:String) -> UInt8
             case "F":
                 number = 15
             default:
-                println("bad"+c)
+                println("bad char")
         }
         byte = byte | number
     }

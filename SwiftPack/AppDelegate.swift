@@ -34,46 +34,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let clazz:AnyObject = classFromType(NSString.self)
         let items = pb.readObjectsForClasses([clazz], options:nil)
         
+        var output = ""
         for hexString in items
         {
             let bytes:Array<UInt8> = hexStringToByteArray(hexString as String)
             var result:AnyObject = unPackByteArray(bytes)
-            decodedView.string = result.description
+            output += result.description
+            output += "\n"
         }
+        
+        decodedView.string = output
     }
 }
-
-/*
-- (IBAction)readPasteBoard:(id)sender
-{
-    NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
-    NSArray *copiedItems = [pasteboard readObjectsForClasses:@[[NSString class]] options:@{}];
-    NSString *textString = @"error";
-    if (copiedItems != nil)
-    {
-        NSString *string = [copiedItems firstObject];
-        NSData *bytes = [self hexToBytes:string];
-        if (bytes)
-        {
-            id parsedPack = [RLMessagePack unpackData:bytes];
-            if (parsedPack)
-            {
-                textString = [parsedPack description];
-            }
-            else
-            {
-                textString = @"unparsable";
-            }
-        }
-        else
-        {
-            textString = @"empty";
-        }
-    }
-    
-    self.decodedView.string = textString;
-}
-*/
 
 func test()
 {
