@@ -15,11 +15,6 @@ func swiftByteArray(data:NSData)->[UInt8]
     return bytes
 }
 
-func dataFromSlice(bytes:Slice<UInt8>)->NSData
-{
-    return NSData(bytes: Array(bytes) as [UInt8], length: bytes.count)
-}
-
 func unPackByteArray(bytes:Array<UInt8>)->AnyObject
 {
     var sliceBytes = bytes[0..<bytes.count]
