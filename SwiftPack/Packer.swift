@@ -217,41 +217,33 @@ func packString(string:String, bytes:[UInt8]) -> [UInt8]
 {
     var localBytes:Array<UInt8> = bytes
     
-    let cString:[CChar]? = string.cStringUsingEncoding(NSUTF8StringEncoding)
-    if let cStr = cString
+    var stringBuff = [UInt8]()
+    stringBuff += string.utf8
+
+    var length = stringBuff.count
+    if (length < 0x20)
     {
-        var length = Int32(countElements(cStr))-1
-        if (length < 0x20)
-        {
-            localBytes.append(UInt8(0xA0 | UInt8(length)))
-        }
-        else
-        {
-            if (length < 0x10)
-            {
-                localBytes.append(UInt8(0xD9))
-            }
-            else if (length < 0x100)
-            {
-                localBytes.append(UInt8(0xDA))
-            }
-            else
-            {
-                localBytes.append(UInt8(0xDB))
-            }
-            
-            localBytes += lengthBytes(length)
-        }
-        
-        var strBytes = [UInt8](count: Int(length), repeatedValue: 0)
-        
-        memcpy(&strBytes, cStr, UInt(length))
-        localBytes += strBytes
+        localBytes.append(UInt8(0xA0 | UInt8(length)))
     }
     else
     {
-        error("bad string")
+        if (length < 0x10)
+        {
+            localBytes.append(UInt8(0xD9))
+        }
+        else if (length < 0x100)
+        {
+            localBytes.append(UInt8(0xDA))
+        }
+        else
+        {
+            localBytes.append(UInt8(0xDB))
+        }
+        
+        localBytes += lengthBytes(Int32(length))
     }
+    
+    localBytes += stringBuff
     
     return localBytes
 }

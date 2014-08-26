@@ -15,23 +15,6 @@ func swiftByteArray(data:NSData)->[UInt8]
     return bytes
 }
 
-func stringFromSlice(bytes:Slice<UInt8>)->String
-{
-    var localBytes = Array(bytes)
-    localBytes.append(0)
-
-    var stringPointer = UnsafePointer<CChar>( localBytes.withUnsafeBufferPointer { $0.baseAddress } )
-    
-    let optionalString = String.fromCString(stringPointer)
-    
-    if let string = optionalString
-    {
-        return string
-    }
-
-    return ""
-}
-
 func dataFromSlice(bytes:Slice<UInt8>)->NSData
 {
     return NSData(bytes: Array(bytes) as [UInt8], length: bytes.count)
@@ -89,8 +72,15 @@ func parseBytes(bytesIn:Slice<UInt8>)->(value:AnyObject, bytesRead:UInt)
         return (value:arrayValues.value, bytesRead:arrayValues.bytesRead+1)
     case 0xa0...0xbf:
         let length = UInt(byte & 0x1F)
-        let str = stringFromSlice(bytes[0..<Int(length)])
-        return (value:str, bytesRead:length+1)
+        let str = String.stringWithBytes(bytes[0..<Int(length)], encoding: NSUTF8StringEncoding)
+        if let string = str
+        {
+            return (value:string, bytesRead:length+1)
+        }
+        else
+        {
+            return (value:"", bytesRead:length+1);
+        }
     case 0xc0:          //nil type
         return ("",1)
     case 0xc1:          //neverused
@@ -276,7 +266,15 @@ func parseStr(bytes:Slice<UInt8>, headerSize:UInt)->(value:String, bytesRead:UIn
     
     if (headerSize+length < UInt(bytes.count))
     {
-        return (stringFromSlice(bytes[Int(headerSize)..<Int(length+headerSize)]), length+headerSize)
+        let str = String.stringWithBytes(bytes[Int(headerSize)..<Int(length+headerSize)], encoding: NSUTF8StringEncoding)
+        if let string = str
+        {
+            return (string, length+headerSize)
+        }
+        else
+        {
+            return ("", length+headerSize)
+        }
     }
     
     return ("", 1)
