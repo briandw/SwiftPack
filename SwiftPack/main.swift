@@ -2,8 +2,8 @@
 //  main.swift
 //  SwiftPack
 //
-//  Created by brian on 8/4/14.
-//  Copyright (c) 2014 RantLab. All rights reserved.
+//  Created by brian on 9/7/14.
+//  Copyright (c) 2014 Rantlab. All rights reserved.
 //
 
 import Cocoa
