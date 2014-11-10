@@ -90,7 +90,8 @@ public class Unpacker
             return (value:arrayValues.value, bytesRead:arrayValues.bytesRead+1)
         case 0xa0...0xbf:
             let length = UInt(byte & 0x1F)
-            let str = String.stringWithBytes(bytes[0..<Int(length)], encoding: NSUTF8StringEncoding)
+String()
+            let str = String(bytes: bytes[0..<Int(length)], encoding: NSUTF8StringEncoding)
             if let string = str
             {
                 return (value:string, bytesRead:length+1)
@@ -284,7 +285,7 @@ public class Unpacker
         
         if (headerSize+length < UInt(bytes.count))
         {
-            let str = String.stringWithBytes(bytes[Int(headerSize)..<Int(length+headerSize)], encoding: NSUTF8StringEncoding)
+            let str = String(bytes: bytes[Int(headerSize)..<Int(length+headerSize)], encoding: NSUTF8StringEncoding)
             if let string = str
             {
                 return (string, length+headerSize)
