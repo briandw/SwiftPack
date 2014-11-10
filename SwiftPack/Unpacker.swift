@@ -90,7 +90,6 @@ public class Unpacker
             return (value:arrayValues.value, bytesRead:arrayValues.bytesRead+1)
         case 0xa0...0xbf:
             let length = UInt(byte & 0x1F)
-String()
             let str = String(bytes: bytes[0..<Int(length)], encoding: NSUTF8StringEncoding)
             if let string = str
             {
