@@ -32,15 +32,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     {
         let pb = NSPasteboard.generalPasteboard()
         let clazz:AnyObject = classFromType(NSString.self)
-        let items = pb.readObjectsForClasses([clazz], options:nil)
-        
+    
         var output = ""
-        for hexString in items
-        {
-            let bytes:Array<UInt8> = Unpacker.hexStringToByteArray(hexString as String)
-            var result:AnyObject = Unpacker.unPackByteArray(bytes)
-            output += result.description
-            output += "\n"
+        
+        if let items = pb.readObjectsForClasses([clazz], options:nil)? {
+            for hexString in items
+            {
+                let bytes:Array<UInt8> = Unpacker.hexStringToByteArray(hexString as String)
+                var result:AnyObject = Unpacker.unPackByteArray(bytes)
+                output += result.description
+                output += "\n"
+            }
         }
         
         decodedView.string = output
