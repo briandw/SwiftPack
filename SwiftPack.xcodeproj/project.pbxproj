@@ -24,6 +24,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		D329D1681A19ABAF006BB33D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D365F96D19BD22B600160701 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D365F97419BD22B600160701;
+			remoteInfo = UnPacker;
+		};
 		D365F9B219BD268500160701 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D365F96D19BD22B600160701 /* Project object */;
@@ -237,6 +244,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				D329D1691A19ABAF006BB33D /* PBXTargetDependency */,
 			);
 			name = SwiftPackTests;
 			productName = SwiftPackTests;
@@ -260,6 +268,7 @@
 					};
 					D37D777E19BD2D6C0066F982 = {
 						CreatedOnToolsVersion = 6.0;
+						TestTargetID = D365F97419BD22B600160701;
 					};
 				};
 			};
@@ -343,6 +352,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		D329D1691A19ABAF006BB33D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D365F97419BD22B600160701 /* UnPacker */;
+			targetProxy = D329D1681A19ABAF006BB33D /* PBXContainerItemProxy */;
+		};
 		D365F9B319BD268500160701 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D365F99F19BD268500160701 /* SwiftPack */;
@@ -513,6 +527,7 @@
 		D37D778519BD2D6C0066F982 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
@@ -525,12 +540,14 @@
 				INFOPLIST_FILE = SwiftPackTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/UnPacker.app/Contents/MacOS/UnPacker";
 			};
 			name = Debug;
 		};
 		D37D778619BD2D6C0066F982 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
@@ -539,6 +556,7 @@
 				INFOPLIST_FILE = SwiftPackTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/UnPacker.app/Contents/MacOS/UnPacker";
 			};
 			name = Release;
 		};
