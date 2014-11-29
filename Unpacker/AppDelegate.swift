@@ -44,8 +44,22 @@ class AppDelegate: NSObject, NSApplicationDelegate
             for hexString in items
             {
                 let bytes:Array<UInt8> = Unpacker.hexStringToByteArray(hexString as String)
-                var result:AnyObject = Unpacker.unPackByteArray(bytes)
-                output += result.description
+                if (bytes.count > 0)
+                {
+                    var result:AnyObject = Unpacker.unPackByteArray(bytes)
+                    var description:String = result.description
+                    if (description.utf16Count < 1)
+                    {
+                        description = "unparsable"
+                    }
+                        
+                    output += description
+                }
+                else
+                {
+                    output += "empty"
+                }
+                
                 output += "\n"
             }
         }

@@ -17,15 +17,15 @@ func error(errorMessage:String)
 
 extension String {
     subscript (i: Int) -> String
-        {
+    {
         return String(Array(self)[i])
     }
     
     subscript (r: Range<Int>) -> String
-        {
+    {
         var start = advance(startIndex, r.startIndex)
-            var end = advance(startIndex, r.endIndex)
-            return substringWithRange(Range(start: start, end: end))
+        var end = advance(startIndex, r.endIndex)
+        return substringWithRange(Range(start: start, end: end))
     }
 }
 
@@ -380,10 +380,11 @@ public class Unpacker
                 hexString.append(character)
             }
         }
+        
         hexString = hexString.uppercaseString
         var bytes = [UInt8]()
-        
-        for var i:Int = 0; i < countElements(hexString); i += 2
+        let stringLength = countElements(hexString)
+        for var i:Int = 0; i < stringLength; i += 2
         {
             var sub = hexString[i..<i+2]
             var byte:UInt8 = charPairToByte(sub)
@@ -435,7 +436,7 @@ public class Unpacker
                 case "F":
                     number = 15
                 default:
-                    println("bad char")
+                    println("bad char \(c)")
             }
             byte = byte | number
         }
