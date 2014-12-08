@@ -300,9 +300,12 @@ public class Unpacker
 
     class func hexFromData(data:NSData) -> String
     {
+        return hexFromBytes(swiftByteArray(data))
+    }
+    
+    class func hexFromBytes(bytes:[UInt8])-> String
+    {
         var string = ""
-        let bytes = swiftByteArray(data)
-        
         var i = 0
         for byte in bytes
         {

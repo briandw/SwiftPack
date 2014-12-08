@@ -38,7 +38,7 @@ class SwiftPack_Tests: XCTestCase {
             
             //print(bytes)
             println("MsgPack test case")
-            result =  Unpacker.unPackByteArray(msgPackCase)
+            result = Unpacker.unPackByteArray(msgPackCase)
             println(result)
     }
     
@@ -49,4 +49,21 @@ class SwiftPack_Tests: XCTestCase {
         }
     }
     
+    func testPacker() {
+        var data:Dictionary<String,Any>=[:]
+        data["c"] = 3
+        var packed = Packer.pack(data);
+        
+        var correct: [UInt8] = [0x81, 0xA1, 0x63, 0xD0, 0x03];
+        if (packed.count == 5)
+        {
+            for var i = 0; i < packed.count; i++
+            {
+                if (correct[i] != packed[i])
+                {
+                    XCTAssertTrue(false, "Unexpected result")
+                }
+            }
+        }
+    }
 }

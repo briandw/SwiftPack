@@ -34,13 +34,13 @@ public class Packer
         {
             localBytes = packArray(thing as Array<Any>, bytes: bytes)
         }
-        else if (thing is Int)
-        {
-            localBytes = packInt(thing as Int64, bytes: bytes)
-        }
         else if (thing is UInt)
         {
             localBytes = packUInt(thing as UInt64, bytes: bytes)
+        }
+        else if (thing is Int)
+        {
+            localBytes = packInt(thing as Int, bytes: bytes)
         }
         else if (thing is Float)
         {
@@ -123,7 +123,7 @@ public class Packer
         return copyBytes(uint, length: 8, bytes: localBytes)
     }
 
-    class func packInt(int:Int64, bytes:[UInt8]) -> [UInt8]
+    class func packInt(int:Int, bytes:[UInt8]) -> [UInt8]
     {
         switch (int)
         {
