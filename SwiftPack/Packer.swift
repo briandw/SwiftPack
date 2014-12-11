@@ -21,49 +21,32 @@ public class Packer
     class func pack(thing:Any, bytes:[UInt8]) -> [UInt8]
     {
         var localBytes = bytes
-        
-        if (thing is String)
+
+        switch thing
         {
-            localBytes = packString(thing as String, bytes: bytes)
-        }
-        else if (thing is Dictionary<String, Any>)
-        {
-            localBytes = packDictionary(thing as Dictionary<String, Any>, bytes: bytes)
-        }
-        else if (thing is Array<Any>)
-        {
-            localBytes = packArray(thing as Array<Any>, bytes: bytes)
-        }
-        else if (thing is UInt)
-        {
-            localBytes = packUInt(thing as UInt64, bytes: bytes)
-        }
-        else if (thing is Int)
-        {
-            localBytes = packInt(thing as Int, bytes: bytes)
-        }
-        else if (thing is Float)
-        {
-            localBytes = packFloat(thing as Float, bytes: bytes)
-        }
-        else if (thing is Double)
-        {
-            localBytes = packDouble(thing as Double, bytes: bytes)
-        }
-        else if (thing is [UInt8])
-        {
-            localBytes = packBin(thing as [UInt8], bytes: bytes)
-        }
-        else if (thing is Bool)
-        {
-            let value: UInt8 = thing as Bool ? 0xc3 : 0xc2
+        case let string as String:
+            localBytes = packString(string, bytes: bytes)
+        case let dictionary as Dictionary<String, Any>:
+            localBytes = packDictionary(dictionary, bytes: bytes)
+        case let array as Array<Any>:
+            localBytes = packArray(array, bytes: bytes)
+        case let uint as UInt:
+            localBytes = packUInt(UInt64(uint), bytes: bytes)
+        case let int as Int:
+            localBytes = packInt(int, bytes: bytes)
+        case let float as Float:
+            localBytes = packFloat(float, bytes: bytes)
+        case let double as Double:
+            localBytes = packDouble(double, bytes: bytes)
+        case let binary as [UInt8]:
+            localBytes = packBin(binary, bytes: bytes)
+        case let bool as Bool:
+            let value: UInt8 = bool ? 0xc3 : 0xc2
             localBytes = [value]
-        }
-        else
-        {
+        default:
             println("Error: Can't pack type")
         }
-        
+
         return localBytes
     }
 
