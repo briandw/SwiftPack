@@ -54,6 +54,11 @@ public class Packer
         {
             localBytes = packBin(thing as [UInt8], bytes: bytes)
         }
+        else if (thing is Bool)
+        {
+            let value: UInt8 = thing as Bool ? 0xc3 : 0xc2
+            localBytes = [value]
+        }
         else
         {
             println("Error: Can't pack type")

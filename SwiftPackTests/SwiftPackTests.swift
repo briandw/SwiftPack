@@ -66,4 +66,16 @@ class SwiftPack_Tests: XCTestCase {
             }
         }
     }
+
+    func test_Packer_PacksFalse() {
+        let packedFalse: [UInt8] = Packer.pack(false)
+
+        XCTAssertEqual([0xc2], packedFalse)
+    }
+
+    func test_Packer_PacksTrue() {
+        let packedTrue: [UInt8] = Packer.pack(true)
+
+        XCTAssertEqual([0xc3], packedTrue)
+    }
 }
