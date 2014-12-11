@@ -24,27 +24,36 @@ public class Packer
 
         switch thing
         {
-        case let string as String:
-            localBytes = packString(string, bytes: bytes)
-        case let dictionary as Dictionary<String, Any>:
-            localBytes = packDictionary(dictionary, bytes: bytes)
-        case let array as Array<Any>:
-            localBytes = packArray(array, bytes: bytes)
-        case let uint as UInt:
-            localBytes = packUInt(UInt64(uint), bytes: bytes)
-        case let int as Int:
-            localBytes = packInt(int, bytes: bytes)
-        case let float as Float:
-            localBytes = packFloat(float, bytes: bytes)
-        case let double as Double:
-            localBytes = packDouble(double, bytes: bytes)
-        case let binary as [UInt8]:
-            localBytes = packBin(binary, bytes: bytes)
-        case let bool as Bool:
-            let value: UInt8 = bool ? 0xc3 : 0xc2
-            localBytes = [value]
-        default:
-            println("Error: Can't pack type")
+            case let string as String:
+                localBytes = packString(string, bytes: bytes)
+            
+            case let dictionary as Dictionary<String, Any>:
+                localBytes = packDictionary(dictionary, bytes: bytes)
+            
+            case let array as Array<Any>:
+                localBytes = packArray(array, bytes: bytes)
+            
+            case let uint as UInt:
+                localBytes = packUInt(UInt64(uint), bytes: bytes)
+            
+            case let int as Int:
+                localBytes = packInt(int, bytes: bytes)
+            
+            case let float as Float:
+                localBytes = packFloat(float, bytes: bytes)
+            
+            case let double as Double:
+                localBytes = packDouble(double, bytes: bytes)
+            
+            case let binary as [UInt8]:
+                localBytes = packBin(binary, bytes: bytes)
+            
+            case let bool as Bool:
+                let value: UInt8 = bool ? 0xc3 : 0xc2
+                localBytes = [value]
+            
+            default:
+                println("Error: Can't pack type")
         }
 
         return localBytes
