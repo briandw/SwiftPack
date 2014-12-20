@@ -119,58 +119,34 @@ public class Packer
         
         return copyBytes(uint, length: 8, bytes: localBytes)
     }
-
-    class func packInt(int:Int, bytes:[UInt8]) -> [UInt8]
+    class func packInt(var int:Int, bytes:[UInt8]) -> [UInt8]
     {
-        switch (int)
-        {
-            case 0..<0x10:
-                return packInt8(Int8(int), bytes: bytes)
-            
-            case 0x10..<0x100:
-                return packInt16(Int16(int), bytes: bytes)
-            
-            case 0x10..<0x10000:
-                return packInt32(Int32(int), bytes: bytes)
+        var size:Int!
+        var formatByte: UInt8!
+        switch int {
+        case -32..<0, 0...127:
+            return unsafeBitCast([int], [UInt8].self)
 
-            default:
-                return packInt64(Int64(int), bytes: bytes)
+        case Int(Int8.min)...Int(Int8.max):
+            size = sizeof(Int8.self)
+            formatByte = 0xd0
+
+        case Int(Int16.min)...Int(Int16.max):
+            size = sizeof(Int16.self)
+            formatByte = 0xd1
+
+        case Int(Int32.min)...Int(Int32.max):
+            size = sizeof(Int32.self)
+            formatByte = 0xd2
+
+        default:
+            size = sizeof(Int64.self)
+            formatByte = 0xd3
         }
-    }
 
-    class func packInt8(int:Int8, bytes:[UInt8]) -> [UInt8]
-    {
-        var localBytes:Array<UInt8> = bytes
-        localBytes.append(0xD0)
-        localBytes.append(UInt8(int))
-        return localBytes
-    }
-
-    class func packInt16(int:Int16, bytes:[UInt8]) -> [UInt8]
-    {
-        var localInt = UInt16(int)
-        var localBytes:Array<UInt8> = bytes
-        localBytes.append(0xD1)
-        
-        return copyBytes(int, length: 2, bytes: localBytes)
-    }
-
-    class func packInt32(int:Int32, bytes:[UInt8]) -> [UInt8]
-    {
-        var localInt:UInt32 = UInt32(int)
-        var localBytes:Array<UInt8> = bytes
-        localBytes.append(0xD2);
-        
-        return copyBytes(int, length: 4, bytes: localBytes)
-    }
-
-    class func packInt64(int:Int64, bytes:[UInt8]) -> [UInt8]
-    {
-        var localInt:UInt64 = UInt64(int)
-        var localBytes:Array<UInt8> = bytes
-        localBytes.append(0xD3)
-        
-        return copyBytes(int, length: 8, bytes: localBytes)
+        var data = [Int8](count: size, repeatedValue: 0)
+        memcpy(&data, &int, UInt(size))
+        return [formatByte] + unsafeBitCast(reverse(data), [UInt8].self)
     }
 
     class func packFloat(float:Float, bytes:[UInt8]) -> [UInt8]
