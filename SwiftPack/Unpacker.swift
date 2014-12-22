@@ -72,24 +72,23 @@ public class Unpacker
 
     class func parseBytes(bytesIn:Slice<UInt8>)->(value:AnyObject, bytesRead:UInt)
     {
-        let byte:UInt8 = bytesIn[0]
-        var bytes = bytesIn;
-        bytes.removeAtIndex(0)
+        let formatByte:UInt8 = bytesIn[0]
+        let bytes = dropFirst(bytesIn)
 
-        switch byte
+        switch formatByte
             {
         case 0x00...0x7f:
-            return (Int(byte), 1)
+            return (Int(formatByte), 1)
         case 0x80...0x8f:
-            let elements = UInt(byte & 0xF)
+            let elements = UInt(formatByte & 0xF)
             let mapValues = parseMapWithElements(bytes, elements: elements)
             return (value:mapValues.value, bytesRead:mapValues.bytesRead+1)
         case 0x90...0x9f:
-            let elements = UInt(byte & 0xF)
+            let elements = UInt(formatByte & 0xF)
             let arrayValues = parseArrayWithElements(bytes, elements: elements)
             return (value:arrayValues.value, bytesRead:arrayValues.bytesRead+1)
         case 0xa0...0xbf:
-            let length = UInt(byte & 0x1F)
+            let length = UInt(formatByte & 0x1F)
             let str = String(bytes: bytes[0..<Int(length)], encoding: NSUTF8StringEncoding)
             if let string = str
             {
@@ -164,7 +163,7 @@ public class Unpacker
             let results = parseMap(bytes, headerSize: 4)
             return(results.value, results.bytesRead+1)
         case 0xe0...0xff:
-            let fixnum = Int(unsafeBitCast(byte, Int8.self))
+            let fixnum = Int(unsafeBitCast(formatByte, Int8.self))
             return (fixnum, 1)
             
         default:
