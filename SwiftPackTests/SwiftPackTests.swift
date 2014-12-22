@@ -42,13 +42,6 @@ class SwiftPack_Tests: XCTestCase {
             println(result)
     }
     
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measureBlock() {
-            // Put the code you want to measure the time of here.
-        }
-    }
-    
     func testPacker() {
         var data:Dictionary<String,Any>=[:]
         data["c"] = 3
