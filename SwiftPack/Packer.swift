@@ -128,13 +128,10 @@ public class Packer
         return copyBytes(localFloat, length: 4, bytes: localBytes)
     }
 
-    class func packDouble(float:Double, bytes:[UInt8]) -> [UInt8]
+    class func packDouble(double:Double, bytes:[UInt8]) -> [UInt8]
     {
-        var localFloat = float
-        var localBytes:Array<UInt8> = bytes
-        localBytes.append(0xCB)
-        
-        return copyBytes(localFloat, length: 8, bytes: localBytes)
+        let localBytes:Array<UInt8> = copyBytes(double, length: sizeof(Double), bytes: bytes)
+        return [0xCB] + localBytes.reverse()
     }
 
     class func packBin(bin:[UInt8], bytes:[UInt8]) -> [UInt8]

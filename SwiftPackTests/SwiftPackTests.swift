@@ -78,4 +78,24 @@ class SwiftPack_Tests: XCTestCase {
 
         XCTAssertEqual([0xc3], packedTrue)
     }
+
+    func test_Packer_PacksDouble() {
+        let expected: [UInt8] = [0xcb, 0x40, 0x39, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00]
+        XCTAssertEqual(expected, Packer.pack(Double(25.5)))
+    }
+
+    func test_Unpacker_UnpacksDouble() {
+        let packed: [UInt8] = [0xcb, 0x40, 0x39, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00]
+        XCTAssertEqual(25.5, Unpacker.unPackByteArray(packed) as Double)
+    }
+
+    func test_Packer_PacksNegativeDouble() {
+        let expected: [UInt8] = [0xcb, 0xc0, 0x39, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00]
+        XCTAssertEqual(expected, Packer.pack(Double(-25.5)))
+    }
+
+    func test_Unpacker_UnpacksNegativeDouble() {
+        let packed: [UInt8] = [0xcb, 0xc0, 0x39, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00]
+        XCTAssertEqual(-25.5, Unpacker.unPackByteArray(packed) as Double)
+    }
 }
