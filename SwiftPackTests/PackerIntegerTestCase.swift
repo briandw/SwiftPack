@@ -57,7 +57,7 @@ class PackerIntegerTestCase: XCTestCase {
 
     // MARK: -
 
-    private func packInt<T:IntegerType>(int: T) -> [Byte] {
+    private func packInt<T: IntegerType>(int: T) -> [UInt8] {
         return Packer.pack(int)
     }
 }
