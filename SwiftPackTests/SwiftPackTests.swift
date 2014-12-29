@@ -42,13 +42,6 @@ class SwiftPack_Tests: XCTestCase {
             println(result)
     }
     
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measureBlock() {
-            // Put the code you want to measure the time of here.
-        }
-    }
-    
     func testPacker() {
         var data:Dictionary<String,Any>=[:]
         data["c"] = 3
@@ -77,5 +70,25 @@ class SwiftPack_Tests: XCTestCase {
         let packedTrue: [UInt8] = Packer.pack(true)
 
         XCTAssertEqual([0xc3], packedTrue)
+    }
+
+    func test_Packer_PacksDouble() {
+        let expected: [UInt8] = [0xcb, 0x40, 0x39, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00]
+        XCTAssertEqual(expected, Packer.pack(Double(25.5)))
+    }
+
+    func test_Unpacker_UnpacksDouble() {
+        let packed: [UInt8] = [0xcb, 0x40, 0x39, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00]
+        XCTAssertEqual(25.5, Unpacker.unPackByteArray(packed) as Double)
+    }
+
+    func test_Packer_PacksNegativeDouble() {
+        let expected: [UInt8] = [0xcb, 0xc0, 0x39, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00]
+        XCTAssertEqual(expected, Packer.pack(Double(-25.5)))
+    }
+
+    func test_Unpacker_UnpacksNegativeDouble() {
+        let packed: [UInt8] = [0xcb, 0xc0, 0x39, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00]
+        XCTAssertEqual(-25.5, Unpacker.unPackByteArray(packed) as Double)
     }
 }

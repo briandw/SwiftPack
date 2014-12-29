@@ -72,24 +72,23 @@ public class Unpacker
 
     class func parseBytes(bytesIn:Slice<UInt8>)->(value:AnyObject, bytesRead:UInt)
     {
-        let byte:UInt8 = bytesIn[0]
-        var bytes = bytesIn;
-        bytes.removeAtIndex(0)
-        
-        switch(Int(byte))
+        let formatByte:UInt8 = bytesIn[0]
+        let bytes = dropFirst(bytesIn)
+
+        switch formatByte
             {
         case 0x00...0x7f:
-            return (Int(byte), 1)
+            return (Int(formatByte), 1)
         case 0x80...0x8f:
-            let elements = UInt(byte & 0xF)
+            let elements = UInt(formatByte & 0xF)
             let mapValues = parseMapWithElements(bytes, elements: elements)
             return (value:mapValues.value, bytesRead:mapValues.bytesRead+1)
         case 0x90...0x9f:
-            let elements = UInt(byte & 0xF)
+            let elements = UInt(formatByte & 0xF)
             let arrayValues = parseArrayWithElements(bytes, elements: elements)
             return (value:arrayValues.value, bytesRead:arrayValues.bytesRead+1)
         case 0xa0...0xbf:
-            let length = UInt(byte & 0x1F)
+            let length = UInt(formatByte & 0x1F)
             let str = String(bytes: bytes[0..<Int(length)], encoding: NSUTF8StringEncoding)
             if let string = str
             {
@@ -133,13 +132,13 @@ public class Unpacker
         case 0xcf:
             return (parseUInt(bytes, length: 8), 9)
         case 0xd0:
-            return (parseInt(bytes, length: 1), 2)
+            return (Int(parseInt(bytes, type: Int8.self)), sizeof(Int8) + 1)
         case 0xd1:
-            return (parseInt(bytes, length: 2), 3)
+            return (Int(parseInt(bytes, type: Int16.self)), sizeof(Int16) + 1)
         case 0xd2:
-            return (parseInt(bytes, length: 4), 5)
+            return (Int(parseInt(bytes, type: Int32.self)), sizeof(Int32) + 1)
         case 0xd3:
-            return (parseInt(bytes, length: 8), 9)
+            return (Int(parseInt(bytes, type: Int64.self)), sizeof(Int64) + 1)
         case 0xd4...0xd8:
             error("Unhandeled type")
         case 0xd9:
@@ -164,8 +163,8 @@ public class Unpacker
             let results = parseMap(bytes, headerSize: 4)
             return(results.value, results.bytesRead+1)
         case 0xe0...0xff:
-            let negInt:Int = Int(byte&0x1F) * -1
-            return (negInt, 1)
+            let fixnum = Int(unsafeBitCast(formatByte, Int8.self))
+            return (fixnum, 1)
             
         default:
             error("Unknown type")
@@ -174,12 +173,12 @@ public class Unpacker
         return ("", 0)
     }
 
-    class func parseInt(bytes:Slice<UInt8>, length:UInt)->Int
-    {
-        var myInt:Int = 0
-        var intBytes = bytes[0..<Int(length)].reverse()
-        memcpy(&myInt, Array<UInt8>(bytes), length)
-        return myInt
+    class func parseInt<T: IntegerType>(data: Slice<Byte>, type: T.Type) -> T {
+        var int:T = 0
+        var intBytes = unsafeBitCast(data, Slice<Int8>.self)
+        let length = UInt(sizeof(type))
+        memcpy(&int, [Int8](intBytes.reverse()), length)
+        return int
     }
 
     class func parseUInt(bytes:Slice<UInt8>, length:UInt)->UInt
