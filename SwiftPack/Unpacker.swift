@@ -89,10 +89,10 @@ public class Unpacker
             return (value:arrayValues.value, bytesRead:arrayValues.bytesRead+1)
         case 0xa0...0xbf:
             let length = UInt(formatByte & 0x1F)
-            let str = String(bytes: bytes[0..<Int(length)], encoding: NSUTF8StringEncoding)
-            if let string = str
+            let str:String? = String(bytes: bytes[0..<Int(length)], encoding: NSUTF8StringEncoding)
+            if (str != nil)
             {
-                return (value:string, bytesRead:length+1)
+                return (value:str!, bytesRead:length+1)
             }
             else
             {
@@ -108,13 +108,14 @@ public class Unpacker
         case 0xc3:
             return (true, 1)
         case 0xc4:
-            return (Int(bytes[0]), 2)
+            let results = parseBin(bytes, headerSize: 1)
+            return (results.value, results.bytesRead+1)
         case 0xc5:
-            let bin = parseBin(bytes, length: 2)
-            return (bin, 3)
+            let results = parseBin(bytes, headerSize: 2)
+            return (results.value, results.bytesRead+1)
         case 0xc6:
-            let bin = parseBin(bytes, length: 4)
-            return (bin, 5)
+            let results = parseBin(bytes, headerSize: 4)
+            return (results.value, results.bytesRead+1)
         case 0xc7...0xc9:
             error("Unhandeled type")
         case 0xca:
@@ -207,11 +208,14 @@ public class Unpacker
         return d
     }
 
-    class func parseBin(bytes:Slice<UInt8>, length:UInt) ->Int
+    class func parseBin(bytes:Slice<UInt8>, headerSize:UInt) -> (value:AnyObject, bytesRead:UInt)
     {
-        var bin:Int = 0
-        memcpy(&bin, Array<UInt8>(bytes), length)
-        return bin
+        var length:UInt = 0
+        var headerBytes = Array<UInt8>(bytes[0..<Int(headerSize)].reverse())
+        memcpy(&length, headerBytes, headerSize)
+
+        let dataBytes = Array<UInt8>(bytes[Int(headerSize)..<Int(length)]);
+        return (NSData(bytes: dataBytes, length: dataBytes.count), length+headerSize)
     }
 
     class func parseMap(bytes:Slice<UInt8>, headerSize:UInt)->(value:Dictionary<String, AnyObject>, bytesRead:UInt)
@@ -385,7 +389,12 @@ public class Unpacker
         
         hexString = hexString.uppercaseString
         var bytes = [UInt8]()
-        let stringLength = countElements(hexString)
+        var stringLength = countElements(hexString)
+        if (stringLength % 2 != 0)
+        {
+            stringLength -= 1;
+        }
+        
         for var i:Int = 0; i < stringLength; i += 2
         {
             var sub = hexString[i..<i+2]
