@@ -7,15 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D35D8C131A8418840039CC3B /* SwiftPack.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D365F9A019BD268500160701 /* SwiftPack.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D365F9A519BD268500160701 /* SwiftPack.h in Headers */ = {isa = PBXBuildFile; fileRef = D365F9A419BD268500160701 /* SwiftPack.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D365F9BF19BD269F00160701 /* Packer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D365F99719BD233100160701 /* Packer.swift */; };
 		D365F9C019BD26A500160701 /* Unpacker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D365F99819BD233100160701 /* Unpacker.swift */; };
 		D37D778419BD2D6C0066F982 /* SwiftPackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37D778319BD2D6C0066F982 /* SwiftPackTests.swift */; };
 		D37D778819BD694F0066F982 /* Packer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D365F99719BD233100160701 /* Packer.swift */; };
 		D37D778919BD69FC0066F982 /* Unpacker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D365F99819BD233100160701 /* Unpacker.swift */; };
+		D3E7A58A1A840C990055FD3B /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3F2D1B21A2A56E1004E3DDC /* MainMenu.xib */; };
 		D3F2D1AB1A2A56A5004E3DDC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3F2D1AA1A2A56A5004E3DDC /* AppDelegate.swift */; };
 		D3F2D1AD1A2A56BD004E3DDC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3F2D1AC1A2A56BD004E3DDC /* Images.xcassets */; };
-		D3F2D1B91A2A5717004E3DDC /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3F2D1B21A2A56E1004E3DDC /* MainMenu.xib */; };
 		D3F2D1BA1A2A5751004E3DDC /* SwiftPack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D365F9A019BD268500160701 /* SwiftPack.framework */; };
 		EA2A826C1A45B2220008BD65 /* PackerIntegerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA2A826B1A45B2220008BD65 /* PackerIntegerTestCase.swift */; };
 		EA6606521A45F3CF0017C0C6 /* UnpackerIntegerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA6606511A45F3CF0017C0C6 /* UnpackerIntegerTestCase.swift */; };
@@ -32,6 +33,19 @@
 			remoteInfo = SwiftPack;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D35D8C121A8418770039CC3B /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				D35D8C131A8418840039CC3B /* SwiftPack.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		D365F99719BD233100160701 /* Packer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Packer.swift; sourceTree = "<group>"; };
@@ -206,6 +220,7 @@
 				D3F2D1891A2A5656004E3DDC /* Sources */,
 				D3F2D18A1A2A5656004E3DDC /* Frameworks */,
 				D3F2D18B1A2A5656004E3DDC /* Resources */,
+				D35D8C121A8418770039CC3B /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -278,7 +293,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D3F2D1AD1A2A56BD004E3DDC /* Images.xcassets in Resources */,
-				D3F2D1B91A2A5717004E3DDC /* MainMenu.xib in Resources */,
+				D3E7A58A1A840C990055FD3B /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -372,7 +387,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -409,7 +424,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 			};
