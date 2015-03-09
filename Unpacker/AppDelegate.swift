@@ -39,16 +39,16 @@ class AppDelegate: NSObject, NSApplicationDelegate
         
         var output = ""
         
-        if let items = pb.readObjectsForClasses([clazz], options:nil)?
+        if let items = pb.readObjectsForClasses([clazz], options:nil)
         {
             for hexString in items
             {
-                let bytes:Array<UInt8> = Unpacker.hexStringToByteArray(hexString as String)
+                let bytes:Array<UInt8> = Unpacker.hexStringToByteArray(hexString as! String)
                 if (bytes.count > 0)
                 {
                     var result:AnyObject = Unpacker.unPackByteArray(bytes)
                     var description:String = result.description
-                    if (description.utf16Count < 1)
+                    if (description.lengthOfBytesUsingEncoding(NSUTF8StringEncoding) < 1)
                     {
                         description = "unparsable"
                     }

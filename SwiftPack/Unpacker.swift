@@ -133,13 +133,13 @@ public class Unpacker
         case 0xcf:
             return (parseUInt(bytes, length: 8), 9)
         case 0xd0:
-            return (Int(parseInt(bytes, type: Int8.self)), sizeof(Int8) + 1)
+            return (Int(parseInt(bytes, type: Int8.self)), 2)
         case 0xd1:
-            return (Int(parseInt(bytes, type: Int16.self)), sizeof(Int16) + 1)
+            return (Int(parseInt(bytes, type: Int16.self)), 3)
         case 0xd2:
-            return (Int(parseInt(bytes, type: Int32.self)), sizeof(Int32) + 1)
+            return (Int(parseInt(bytes, type: Int32.self)), 5)
         case 0xd3:
-            return (Int(parseInt(bytes, type: Int64.self)), sizeof(Int64) + 1)
+            return (Int(parseInt(bytes, type: Int64.self)), 9)
         case 0xd4...0xd8:
             error("Unhandeled type")
         case 0xd9:
@@ -174,11 +174,11 @@ public class Unpacker
         return ("", 0)
     }
 
-    class func parseInt<T: IntegerType>(data: Slice<Byte>, type: T.Type) -> T {
+    class func parseInt<T: IntegerType>(data: Slice<UInt8>, type: T.Type) -> T {
         var int:T = 0
         var intBytes = unsafeBitCast(data, Slice<Int8>.self)
         let length = UInt(sizeof(type))
-        memcpy(&int, [Int8](intBytes.reverse()), length)
+        memcpy(&int, [Int8](intBytes.reverse()), Int(length))
         return int
     }
 
@@ -186,7 +186,7 @@ public class Unpacker
     {
         var uint:UInt = 0
         var intBytes = bytes[0..<Int(length)].reverse()
-        memcpy(&uint, Array<UInt8>(intBytes), length)
+        memcpy(&uint, Array<UInt8>(intBytes), Int(length))
         return uint
     }
 
@@ -212,17 +212,18 @@ public class Unpacker
     {
         var length:UInt = 0
         var headerBytes = Array<UInt8>(bytes[0..<Int(headerSize)].reverse())
-        memcpy(&length, headerBytes, headerSize)
+        memcpy(&length, headerBytes, Int(headerSize))
 
         let dataBytes = Array<UInt8>(bytes[Int(headerSize)..<Int(length)]);
-        return (NSData(bytes: dataBytes, length: dataBytes.count), length+headerSize)
+        let size = length+headerSize
+        return (NSData(bytes: dataBytes, length: dataBytes.count), size)
     }
 
     class func parseMap(bytes:Slice<UInt8>, headerSize:UInt)->(value:Dictionary<String, AnyObject>, bytesRead:UInt)
     {
         var elements:UInt = 0
         var headerBytes = Array<UInt8>(bytes[0..<Int(headerSize)].reverse())
-        memcpy(&elements, headerBytes, headerSize)
+        memcpy(&elements, headerBytes, Int(headerSize))
         
         var results = parseMapWithElements(bytes[Int(headerSize)..<bytes.count], elements: elements)
         
@@ -239,7 +240,7 @@ public class Unpacker
             let keyResults = parseBytes(bytes)
             bytesRead += keyResults.bytesRead
             
-            let key:String = keyResults.value as String
+            let key:String = keyResults.value as! String
             bytes = bytes[Int(keyResults.bytesRead)..<bytes.count]
             
             let valueResults = parseBytes(bytes)
@@ -257,7 +258,7 @@ public class Unpacker
     {
         var elements:UInt = 0
         var headerBytes = Array<UInt8>(bytesIn[0..<Int(headerSize)].reverse())
-        memcpy(&elements, headerBytes, headerSize)
+        memcpy(&elements, headerBytes, Int(headerSize))
         let results = parseArrayWithElements(bytesIn[Int(headerSize)..<bytesIn.count], elements: elements)
         
         return (results.value, results.bytesRead+headerSize)
@@ -283,7 +284,7 @@ public class Unpacker
     {
         var length:UInt = 0
         var headerBytes = Array<UInt8>(bytes[0..<Int(headerSize)].reverse())
-        memcpy(&length, headerBytes, headerSize)
+        memcpy(&length, headerBytes, Int(headerSize))
         
         if (headerSize+length < UInt(bytes.count))
         {
@@ -389,7 +390,7 @@ public class Unpacker
         
         hexString = hexString.uppercaseString
         var bytes = [UInt8]()
-        var stringLength = countElements(hexString)
+        var stringLength = count(hexString)
         if (stringLength % 2 != 0)
         {
             stringLength -= 1;

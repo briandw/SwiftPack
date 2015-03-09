@@ -85,7 +85,7 @@ public class Packer
         }
 
         var data = [UInt8](count: size, repeatedValue: 0)
-        memcpy(&data, &uint, UInt(size))
+        memcpy(&data, &uint, size)
         return [formatByte] + data.reverse()
     }
 
@@ -115,7 +115,7 @@ public class Packer
         }
 
         var data = [Int8](count: size, repeatedValue: 0)
-        memcpy(&data, &int, UInt(size))
+        memcpy(&data, &int, size)
         return [formatByte] + unsafeBitCast(reverse(data), [UInt8].self)
     }
 
@@ -137,7 +137,7 @@ public class Packer
     class func packBin(bin:[UInt8], bytes:[UInt8]) -> [UInt8]
     {
         var localBytes:Array<UInt8> = bytes
-        let length = Int32(countElements(localBytes))
+        let length = Int32(count(localBytes))
         if (length < 0x10)
         {
             localBytes.append(UInt8(0xC4))
@@ -195,7 +195,7 @@ public class Packer
     class func packArray(array:Array<Any>, bytes:[UInt8]) -> [UInt8]
     {
         var localBytes = bytes
-        var items = Int32(countElements(array))
+        var items = Int32(count(array))
         if (items < 0x10)
         {
             localBytes.append(UInt8(0x90 | UInt8(items)))
@@ -225,7 +225,7 @@ public class Packer
     class func packDictionary(dict:Dictionary<String, Any>, bytes:[UInt8]) -> [UInt8]
     {
         var localBytes = bytes
-        var elements = Int32(countElements(dict))
+        var elements = Int32(count(dict))
         if (elements < 0x10)
         {
             localBytes.append(UInt8(0x80 | UInt8(elements)))
@@ -284,7 +284,7 @@ public class Packer
         var localValue = value
         var localBytes:Array<UInt8> = bytes
         var intBytes:Array<UInt8> = Array<UInt8>(count:length, repeatedValue:0)
-        memcpy(&intBytes, &localValue, UInt(length))
+        memcpy(&intBytes, &localValue, Int(length))
         localBytes += intBytes
         
         return localBytes
