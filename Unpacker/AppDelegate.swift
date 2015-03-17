@@ -66,5 +66,6 @@ class AppDelegate: NSObject, NSApplicationDelegate
         
         decodedView.string = output
     }
+
 }
 

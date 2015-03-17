@@ -70,7 +70,7 @@ public class Unpacker
         return unPackByteArray(bytes)
     }
 
-    class func parseBytes(bytesIn:Slice<UInt8>)->(value:AnyObject, bytesRead:UInt)
+    class func parseBytes(bytesIn:ArraySlice<UInt8>)->(value:AnyObject, bytesRead:UInt)
     {
         let formatByte:UInt8 = bytesIn[0]
         let bytes = dropFirst(bytesIn)
@@ -174,15 +174,15 @@ public class Unpacker
         return ("", 0)
     }
 
-    class func parseInt<T: IntegerType>(data: Slice<UInt8>, type: T.Type) -> T {
+    public class func parseInt<T: IntegerType>(data: ArraySlice<UInt8>, type: T.Type) -> T {
         var int:T = 0
-        var intBytes = unsafeBitCast(data, Slice<Int8>.self)
+        var intBytes = unsafeBitCast(data, ArraySlice<Int8>.self)
         let length = UInt(sizeof(type))
         memcpy(&int, [Int8](intBytes.reverse()), Int(length))
         return int
     }
 
-    class func parseUInt(bytes:Slice<UInt8>, length:UInt)->UInt
+   public class func parseUInt(bytes:ArraySlice<UInt8>, length:UInt)->UInt
     {
         var uint:UInt = 0
         var intBytes = bytes[0..<Int(length)].reverse()
@@ -190,7 +190,7 @@ public class Unpacker
         return uint
     }
 
-    class func parseFloat(bytes:Slice<UInt8>)->Float
+    public class func parseFloat(bytes:ArraySlice<UInt8>)->Float
     {
         //reverse bytes first?
         var f:Float = 0.0
@@ -199,7 +199,7 @@ public class Unpacker
         return f
     }
 
-    class func parseDouble(bytes:Slice<UInt8>)->Double
+    public class func parseDouble(bytes:ArraySlice<UInt8>)->Double
     {
         //reverse bytes first?
         var d:Double = 0.0
@@ -208,7 +208,7 @@ public class Unpacker
         return d
     }
 
-    class func parseBin(bytes:Slice<UInt8>, headerSize:UInt) -> (value:AnyObject, bytesRead:UInt)
+    public class func parseBin(bytes:ArraySlice<UInt8>, headerSize:UInt) -> (value:AnyObject, bytesRead:UInt)
     {
         var length:UInt = 0
         var headerBytes = Array<UInt8>(bytes[0..<Int(headerSize)].reverse())
@@ -219,7 +219,7 @@ public class Unpacker
         return (NSData(bytes: dataBytes, length: dataBytes.count), size)
     }
 
-    class func parseMap(bytes:Slice<UInt8>, headerSize:UInt)->(value:Dictionary<String, AnyObject>, bytesRead:UInt)
+    public class func parseMap(bytes:ArraySlice<UInt8>, headerSize:UInt)->(value:Dictionary<String, AnyObject>, bytesRead:UInt)
     {
         var elements:UInt = 0
         var headerBytes = Array<UInt8>(bytes[0..<Int(headerSize)].reverse())
@@ -230,7 +230,7 @@ public class Unpacker
         return (results.value, results.bytesRead+headerSize)
     }
 
-    class func parseMapWithElements(bytesIn:Slice<UInt8>, elements:UInt)->(value:Dictionary<String, AnyObject>, bytesRead:UInt)
+    public class func parseMapWithElements(bytesIn:ArraySlice<UInt8>, elements:UInt)->(value:Dictionary<String, AnyObject>, bytesRead:UInt)
     {
         var bytes = bytesIn
         var dict = Dictionary<String, AnyObject>(minimumCapacity: Int(elements))
@@ -254,7 +254,7 @@ public class Unpacker
         return (dict, bytesRead)
     }
 
-    class func parseArray(bytesIn:Slice<UInt8>, headerSize:UInt)->(value:AnyObject, bytesRead:UInt)
+    public class func parseArray(bytesIn:ArraySlice<UInt8>, headerSize:UInt)->(value:AnyObject, bytesRead:UInt)
     {
         var elements:UInt = 0
         var headerBytes = Array<UInt8>(bytesIn[0..<Int(headerSize)].reverse())
@@ -264,7 +264,7 @@ public class Unpacker
         return (results.value, results.bytesRead+headerSize)
     }
 
-    class func parseArrayWithElements(bytesIn:Slice<UInt8>, elements:UInt)->(value:AnyObject, bytesRead:UInt)
+    public class func parseArrayWithElements(bytesIn:ArraySlice<UInt8>, elements:UInt)->(value:AnyObject, bytesRead:UInt)
     {
         var bytesRead:UInt = 0
         var bytes = bytesIn
@@ -280,7 +280,7 @@ public class Unpacker
         return (array, bytesRead)
     }
 
-    class func parseStr(bytes:Slice<UInt8>, headerSize:UInt)->(value:String, bytesRead:UInt)
+    public class func parseStr(bytes:ArraySlice<UInt8>, headerSize:UInt)->(value:String, bytesRead:UInt)
     {
         var length:UInt = 0
         var headerBytes = Array<UInt8>(bytes[0..<Int(headerSize)].reverse())
@@ -302,12 +302,12 @@ public class Unpacker
         return ("", 1)
     }
 
-    class func hexFromData(data:NSData) -> String
+   public class func hexFromData(data:NSData) -> String
     {
         return hexFromBytes(swiftByteArray(data))
     }
     
-    class func hexFromBytes(bytes:[UInt8])-> String
+   public class func hexFromBytes(bytes:[UInt8])-> String
     {
         var string = ""
         var i = 0
@@ -324,7 +324,7 @@ public class Unpacker
         return string
     }
 
-    class func byteToString(byte:UInt8) -> String
+    public class func byteToString(byte:UInt8) -> String
     {
         var string = ""
         var localByte = byte
