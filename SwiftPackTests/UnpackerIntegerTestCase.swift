@@ -59,6 +59,6 @@ class UnpackerIntegerTestCase: XCTestCase {
     // MARK: -
 
     private func unpackInt(bytes: [UInt8]) -> Int {
-        return Unpacker.unPackByteArray(bytes) as Int
+        return Unpacker.unPackByteArray(bytes) as! Int
     }
 }

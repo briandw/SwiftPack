@@ -35,6 +35,6 @@ class UnpackerUnsignedIntegerTestCase: XCTestCase {
     // MARK: -
 
     private func unpackUInt(bytes: [UInt8]) -> UInt {
-        return Unpacker.unPackByteArray(bytes) as UInt
+        return Unpacker.unPackByteArray(bytes) as! UInt
     }
 }

@@ -11,6 +11,11 @@ import SwiftPack
 
 public class Describer
 {
+    public class func describeBytes(bytesIn:[UInt8]) -> (description:String, bytesRead:UInt)
+    {
+        return describeMsgPackBytes(ArraySlice(bytesIn), indent:"");
+    }
+    
     public class func parseMapWithElements(bytesIn:ArraySlice<UInt8>, elements:UInt, indent:String)->(description:String, bytesRead:UInt)
     {
         var bytes = bytesIn
