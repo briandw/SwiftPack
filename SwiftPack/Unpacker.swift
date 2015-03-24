@@ -280,7 +280,7 @@ public class Unpacker
         return (array, bytesRead)
     }
 
-    public class func parseStr(bytes:ArraySlice<UInt8>, headerSize:UInt)->(value:String, bytesRead:UInt)
+    public class func parseStr(bytes:ArraySlice<UInt8>, headerSize:UInt)->(value:String, bytesRead:UInt, length:UInt)
     {
         var length:UInt = 0
         var headerBytes = Array<UInt8>(bytes[0..<Int(headerSize)].reverse())
@@ -291,15 +291,15 @@ public class Unpacker
             let str = String(bytes: bytes[Int(headerSize)..<Int(length+headerSize)], encoding: NSUTF8StringEncoding)
             if let string = str
             {
-                return (string, length+headerSize)
+                return (string, length+headerSize, length)
             }
             else
             {
-                return ("", length+headerSize)
+                return ("", length+headerSize, length)
             }
         }
         
-        return ("", 1)
+        return ("", 1, 0)
     }
 
    public class func hexFromData(data:NSData) -> String

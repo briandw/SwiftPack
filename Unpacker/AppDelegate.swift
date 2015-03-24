@@ -52,7 +52,7 @@ class AppDelegate: NSObject, NSApplicationDelegate
                 let bytes:Array<UInt8> = Unpacker.hexStringToByteArray(hexString as! String)
                 if (bytes.count > 0)
                 {
-                    var result:AnyObject = Unpacker.unPackByteArray(bytes)
+                    var result = Describer.describeBytes(bytes)
                     var description:String = result.description
                     if (description.lengthOfBytesUsingEncoding(NSUTF8StringEncoding) < 1)
                     {
