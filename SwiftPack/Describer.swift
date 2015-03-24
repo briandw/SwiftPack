@@ -16,6 +16,14 @@ public class Describer
         return describeMsgPackBytes(ArraySlice(bytesIn), indent:"");
     }
     
+    public class func parseMap(bytesIn:ArraySlice<UInt8>, headerSize:UInt, indent:String)->(description:String, bytesRead:UInt)
+    {
+        var elements:UInt = 0
+        var headerBytes = Array<UInt8>(bytesIn[0..<Int(headerSize)].reverse())
+        memcpy(&elements, headerBytes, Int(headerSize))
+        return parseMapWithElements(bytesIn[Int(headerSize)..<bytesIn.count], elements:elements, indent: indent)
+    }
+    
     public class func parseMapWithElements(bytesIn:ArraySlice<UInt8>, elements:UInt, indent:String)->(description:String, bytesRead:UInt)
     {
         var bytes = bytesIn
@@ -35,7 +43,7 @@ public class Describer
             let value : AnyObject = valueResults.description
             
             bytes = bytes[Int(valueResults.bytesRead)..<bytes.count]
-            description += "\(key)\n\(value)\n"
+            description += "\n\(nextIndent)\(key) - \(value)"
         }
         
         return (description, bytesRead)
@@ -72,112 +80,185 @@ public class Describer
         let formatByte:UInt8 = bytesIn[0]
         let bytes = dropFirst(bytesIn)
         
+        var bytesRead:UInt = 1;
+        var description = ""
+        
         switch formatByte
         {
         case 0x00...0x7f:
-            return ("\(indent)FixInt \(formatByte)", 1)
+            description = "FixInt \(formatByte)"
+            
         case 0x80...0x8f:
             let elements = UInt(formatByte & 0xF)
             let mapValues = parseMapWithElements(bytes, elements:elements, indent:indent)
-            return (mapValues.description, bytesRead:mapValues.bytesRead+1)
+            description = "FixMap\(elements) \(mapValues.description)"
+            bytesRead += mapValues.bytesRead
+            
         case 0x90...0x9f:
             let elements = UInt(formatByte & 0xF)
             let parsed = parseArrayWithElements(bytes, elements: elements, indent:indent)
-            return (parsed.description, bytesRead:parsed.bytesRead+1)
+            description = "FixArray\(elements) \(parsed.description)"
+            bytesRead += parsed.bytesRead
+            
         case 0xa0...0xbf:
             let length = UInt(formatByte & 0x1F)
             let str:String? = String(bytes: bytes[0..<Int(length)], encoding: NSUTF8StringEncoding)
-            var description:String
             if (str != nil)
             {
-                description = "\(indent)FixStr:\(length):\(str)"
+                let value = str!;
+                description = "FixStr:\(length):\(value)"
             }
             else
             {
-               description = "\(indent)FixStr:\(length):#ERROR#"
+               description = "FixStr:\(length):#ERROR#"
             }
             
-            return (description, bytesRead:length+1)
+            bytesRead += length
+            
         case 0xc0:          //nil type
-            return ("\(indent)nil",1)
+            description = "nil"
+            
         case 0xc1:          //neverused
-            return ("\(indent)#never used#",1)
+            description = "#never used#"
+            
         case 0xc2:
-            return ("\(indent)false",1)
+            description = "false"
+            
         case 0xc3:
-            return ("\(indent)true",1)
+            description = "true"
+            
         case 0xc4:
             let results = Unpacker.parseBin(bytes, headerSize: 1)
-            return ("\(indent)Bin8:\(results.bytesRead):\(results.value)",results.bytesRead+1)
+            description = "Bin8:\(results.bytesRead):\(results.value)"
+            bytesRead += results.bytesRead
+            
         case 0xc5:
             let results = Unpacker.parseBin(bytes, headerSize: 2)
-            return ("\(indent)Bin16:\(results.bytesRead):\(results.value)",results.bytesRead+1)
+            description = "Bin16:\(results.value)"
+            bytesRead += results.bytesRead
+            
         case 0xc6:
             let results = Unpacker.parseBin(bytes, headerSize: 4)
-            return ("\(indent)Bin64:\(results.bytesRead):\(results.value)",results.bytesRead+1)
+            description = "Bin64:\(results.value)"
+            bytesRead += results.bytesRead
+            
         case 0xc7...0xc9:
-            return ("\(indent)Unhandeled ext",1)
+            description = "Unhandeled ext"
+            
         case 0xca:
             let float = Unpacker.parseFloat(bytes)
-            return ("\(indent)float\(float)", 5)
+            description = "float\(float)"
+            bytesRead += 5
+            
         case 0xcb:
             let double = Unpacker.parseDouble(bytes)
-            return ("Double\(double)",9)
+            description = "Double\(double)"
+            bytesRead += 9
+            
         case 0xcc:
-            return ("UInt8\(Unpacker.parseUInt(bytes, length: 1))",2)
+            let value = Unpacker.parseUInt(bytes, length: 1)
+            description = "UInt8\(value)"
+            bytesRead += 1
+            
         case 0xcd:
-            return ("UInt16\(Unpacker.parseUInt(bytes, length: 2))", 3)
+            let value = Unpacker.parseUInt(bytes, length: 2)
+            description = "UInt16\(value))"
+            bytesRead += 2
+            
         case 0xce:
-            return ("UInt32\(Unpacker.parseUInt(bytes, length: 4))", 5)
+            let value = Unpacker.parseUInt(bytes, length: 4)
+            description = "UInt32\(value)"
+            bytesRead += 4
+            
         case 0xcf:
-            return ("UInt64\(Unpacker.parseUInt(bytes, length: 8))", 9)
+            let value = Unpacker.parseUInt(bytes, length: 8)
+            description = "UInt64\(value)"
+            bytesRead += 8
+            
         case 0xd0:
-            return ("Int8\(Unpacker.parseInt(bytes, type: Int8.self))", 2)
+            let value = Unpacker.parseInt(bytes, type: Int8.self)
+            description = "Int8\(value)"
+            bytesRead += 1
+            
         case 0xd1:
-            return ("Int16\(Unpacker.parseInt(bytes, type: Int16.self))", 3)
+            let value = Unpacker.parseInt(bytes, type: Int16.self)
+            description = "Int16\(value)"
+            bytesRead += 2
+            
         case 0xd2:
-            return ("Int32\(Unpacker.parseInt(bytes, type: Int32.self))", 5)
+            let value = Unpacker.parseInt(bytes, type: Int32.self)
+            description = "Int32\(value)"
+            bytesRead += 4
+    
         case 0xd3:
-            return ("Int64\(Unpacker.parseInt(bytes, type: Int64.self))", 9)
+            let value = Unpacker.parseInt(bytes, type: Int64.self)
+            description = "Int64\(value)"
+            bytesRead += 8
         
         case 0xd4:
-            return ("fixext1\(indent)",2)
+            description = "fixext1"
+            bytesRead += 1
+            
         case 0xd5:
-            return ("fixext2\(indent)",3)
+            description = "fixext2"
+            bytesRead += 2
+            
         case 0xd6:
-            return ("fixext4\(indent)",5)
+            description = "fixext4"
+            bytesRead += 4
+            
         case 0xd7:
-            return ("fixext8\(indent)",9)
+            description = "fixext8"
+            bytesRead += 8
+            
         case 0xd8:
-            return ("fixext16\(indent)",17)
+            description = "fixext16"
+            bytesRead += 16
             
         case 0xd9:
             let results = Unpacker.parseStr(bytes, headerSize: 1)
-            return ("\(indent)str8:\(results.bytesRead):\(results.value)",results.bytesRead+1)
+            description = "str8:\(results.value)"
+            bytesRead += 1
+            
         case 0xda:
             let results = Unpacker.parseStr(bytes, headerSize: 2)
-            return ("\(indent)str16:\(results.bytesRead):\(results.value)",results.bytesRead+1)
+            description = "str16:\(results.value)"
+            bytesRead += results.bytesRead
+            
         case 0xdb:
             let results = Unpacker.parseStr(bytes, headerSize: 4)
-            return ("\(indent)str32:\(results.bytesRead):\(results.value)",results.bytesRead+1)
+            description = "str32:\(results.value)"
+            bytesRead += results.bytesRead
+            
         case 0xdc:
             let results = parseArray(bytes, headerSize: 2, indent:indent)
-            return ("\(indent)array16:\(results.bytesRead):\(results.description)",results.bytesRead+1)
+            description = "array16:\(results.description)"
+            bytesRead += results.bytesRead
+            
         case 0xdd:
             let results = parseArray(bytes, headerSize: 4, indent:indent)
-            return ("\(indent)array32:\(results.bytesRead):\(results.description)",results.bytesRead+1)
+            description = "array32:\(results.description)"
+            bytesRead += results.bytesRead
+            
         case 0xde:
-            let results = parseMapWithElements(bytes, elements: 2, indent:indent)
-            return ("\(indent)map16:\(results.bytesRead):\(results.description)",results.bytesRead+1)
+            let results = parseMap(bytes, headerSize: 2, indent:indent)
+            description = "map16:\(results.description)"
+            bytesRead += results.bytesRead
+            
         case 0xdf:
-            let results = parseMapWithElements(bytes, elements: 4, indent:indent)
-            return ("\(indent)array32:\(results.bytesRead):\(results.description)",results.bytesRead+1)
+            let results = parseMap(bytes, headerSize: 4, indent:indent)
+            description = "map32:\(results.description)"
+            bytesRead += results.bytesRead
+            
         case 0xe0...0xff:
-            let fixnum = Int(unsafeBitCast(formatByte, Int8.self))
-            return ("\(indent)fixnum:\(fixnum)",1)
+            let value = Int(unsafeBitCast(formatByte, Int8.self))
+            description = "fixnum:\(value)"
             
         default:
-            return ("\(indent)Unknown type",1)
+            description = "Unknown type"
+            
         }
+        
+        return (description, bytesRead)
     }
 }
