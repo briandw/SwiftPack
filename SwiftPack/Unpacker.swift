@@ -286,7 +286,7 @@ public class Unpacker
         var headerBytes = Array<UInt8>(bytes[0..<Int(headerSize)].reverse())
         memcpy(&length, headerBytes, Int(headerSize))
         
-        if (headerSize+length < UInt(bytes.count))
+        if (headerSize+length <= UInt(bytes.count))
         {
             let str = String(bytes: bytes[Int(headerSize)..<Int(length+headerSize)], encoding: NSUTF8StringEncoding)
             if let string = str
