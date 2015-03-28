@@ -38,7 +38,7 @@ public class Unpacker
         return bytes
     }
 
-    public class func unPackByteArray(bytes:Array<UInt8>)->AnyObject
+    public class func unPackByteArray(bytes:Array<UInt8>)->Any
     {
         var sliceBytes = bytes[0..<bytes.count]
         var bytesRead:UInt = 0
@@ -64,7 +64,7 @@ public class Unpacker
         return returnArray
     }
 
-    class func unPackData(data:NSData)->AnyObject
+    class func unPackData(data:NSData)->Any
     {
         let bytes = swiftByteArray(data)
         return unPackByteArray(bytes)
@@ -214,7 +214,7 @@ public class Unpacker
         var headerBytes = Array<UInt8>(bytes[0..<Int(headerSize)].reverse())
         memcpy(&length, headerBytes, Int(headerSize))
 
-        let dataBytes = Array<UInt8>(bytes[Int(headerSize)..<Int(length)]);
+        let dataBytes = Array<UInt8>(bytes[Int(headerSize)...Int(length)]);
         let size = length+headerSize
         return (NSData(bytes: dataBytes, length: dataBytes.count), size)
     }
@@ -259,7 +259,7 @@ public class Unpacker
         var elements:UInt = 0
         var headerBytes = Array<UInt8>(bytesIn[0..<Int(headerSize)].reverse())
         memcpy(&elements, headerBytes, Int(headerSize))
-        let results = parseArrayWithElements(bytesIn[Int(headerSize)..<bytesIn.count], elements: elements)
+        let results = parseArrayWithElements(bytesIn[Int(headerSize)...bytesIn.count], elements: elements)
         
         return (results.value, results.bytesRead+headerSize)
     }

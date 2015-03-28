@@ -16,6 +16,13 @@ class DescriberTestCase: XCTestCase {
     {
         let simpleHex = "82 A3 66 6F 6F A3 62 61 72 A3 62 61 7A 01"
         let simple = Unpacker.hexStringToByteArray(simpleHex)
+        
+        let packed = Packer.packBin(simple, bytes:Array<UInt8>())
+        println(Unpacker.hexFromBytes(packed))
+        
+        let unpacked = Unpacker.unPackByteArray(packed);
+        //println(Unpacker.hexFromBytes(unpacked))
+        
         let text1 = Describer.describeBytes(simple);
         println(text1.description)
         

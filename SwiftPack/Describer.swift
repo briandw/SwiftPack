@@ -44,8 +44,22 @@ public class Describer
             bytesRead += valueResults.bytesRead;
             let value : AnyObject = valueResults.description
             
-            bytes = bytes[Int(valueResults.bytesRead)..<bytes.count]
             description += "\n\(nextIndent)\(key) - \(value)"
+            
+            let start = Int(valueResults.bytesRead)
+            let end = bytes.count
+            if (start<end)
+            {
+                bytes = bytes[start..<end]
+            }
+            else if (start == end)
+            {
+                bytes = ArraySlice<UInt8>()
+            }
+            else
+            {
+                description += "#Out of bounds#"
+            }
         }
         
         return (description, bytesRead)
@@ -131,17 +145,17 @@ public class Describer
             
         case 0xc4:
             let results = Unpacker.parseBin(bytes, headerSize: 1)
-            description = "Bin8:\(results.bytesRead):\(results.value)"
+            description = "Bin8:\(results.bytesRead-1):\(results.value)"
             bytesRead += results.bytesRead
             
         case 0xc5:
             let results = Unpacker.parseBin(bytes, headerSize: 2)
-            description = "Bin16:\(results.bytesRead):\(results.value)"
+            description = "Bin16:\(results.bytesRead-2):\(results.value)"
             bytesRead += results.bytesRead
             
         case 0xc6:
             let results = Unpacker.parseBin(bytes, headerSize: 4)
-            description = "Bin64:\(results.bytesRead):\(results.value)"
+            description = "Bin64:\(results.bytesRead-4):\(results.value)"
             bytesRead += results.bytesRead
             
         case 0xc7...0xc9:

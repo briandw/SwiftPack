@@ -137,7 +137,7 @@ public class Packer
     class func packBin(bin:[UInt8], bytes:[UInt8]) -> [UInt8]
     {
         var localBytes:Array<UInt8> = bytes
-        let length = Int32(count(localBytes))
+        let length = Int32(count(bin))
         if (length < 0x10)
         {
             localBytes.append(UInt8(0xC4))

@@ -31,7 +31,7 @@ class SwiftPack_Tests: XCTestCase {
         
         
             println("Simple MsgPack")
-            var result:AnyObject = Unpacker.unPackByteArray(simple)
+            var result:Any = Unpacker.unPackByteArray(simple)
             println(result)
             
             //var bytes = pack(result)
