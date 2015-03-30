@@ -53,13 +53,16 @@ class AppDelegate: NSObject, NSApplicationDelegate
                 if (bytes.count > 0)
                 {
                     var result = Describer.describeBytes(bytes)
-                    var description:String = result.description
-                    if (description.lengthOfBytesUsingEncoding(NSUTF8StringEncoding) < 1)
+                    var descriptions:Array<String> = result.descriptions
+                    if (descriptions.count == 0)
                     {
-                        description = "unparsable"
+                        output = "unparsable"
                     }
-                        
-                    output += description
+                    
+                    for str in descriptions
+                    {
+                        output += "\(str)\n"
+                    }
                 }
                 else
                 {

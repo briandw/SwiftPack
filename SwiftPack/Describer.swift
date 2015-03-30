@@ -11,9 +11,19 @@ import SwiftPack
 
 public class Describer
 {
-    public class func describeBytes(bytesIn:[UInt8]) -> (description:String, bytesRead:UInt)
+    public class func describeBytes(bytesIn:[UInt8]) -> (descriptions:Array<String>, bytesRead:UInt)
     {
-        return describeMsgPackBytes(ArraySlice(bytesIn), indent:"");
+        var bytesRead:UInt = 0
+        var values = Array<String>()
+        
+        while (UInt(bytesIn.count) > bytesRead)
+        {
+            let result = describeMsgPackBytes(ArraySlice(bytesIn), indent:"");
+            bytesRead += result.bytesRead
+            values.append(result.description)
+        }
+        
+        return (values, bytesRead:bytesRead)
     }
     
     public class func parseMap(bytesIn:ArraySlice<UInt8>, headerSize:UInt, indent:String)->(description:String, bytesRead:UInt, elements:UInt)
