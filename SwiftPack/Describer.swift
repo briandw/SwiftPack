@@ -103,7 +103,7 @@ public class Describer
     
     public class func describeMsgPackBytes(bytesIn:ArraySlice<UInt8>, indent:String) -> (description:String, bytesRead:UInt)
     {
-        let formatByte:UInt8 = bytesIn[0]
+        let formatByte:UInt = UInt(bytesIn[0]) //Cast this up to a UInt so the switch doesn't crash
         let bytes = dropFirst(bytesIn)
         
         var bytesRead:UInt = 1;
@@ -277,8 +277,10 @@ public class Describer
             bytesRead += results.bytesRead
             
         case 0xe0...0xff:
-            let value = Int(unsafeBitCast(formatByte, Int8.self))
-            description = "Fixnum:\(value)"
+            //swift won't do the right thing here so hack it
+            let tmp = Int(formatByte);
+            let value:Int = tmp-256;
+            description = "NegFixInt:\(value)"
             
         default:
             description = "Unknown type"
