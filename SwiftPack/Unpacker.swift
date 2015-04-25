@@ -72,103 +72,136 @@ public class Unpacker
 
     class func parseBytes(bytesIn:ArraySlice<UInt8>)->(value:AnyObject, bytesRead:UInt)
     {
-        let formatByte:UInt8 = bytesIn[0]
+        let formatByte:Int = Int(bytesIn[0])
         let bytes = dropFirst(bytesIn)
 
         switch formatByte
-            {
-        case 0x00...0x7f:
-            return (Int(formatByte), 1)
-        case 0x80...0x8f:
-            let elements = UInt(formatByte & 0xF)
-            let mapValues = parseMapWithElements(bytes, elements: elements)
-            return (value:mapValues.value, bytesRead:mapValues.bytesRead+1)
-        case 0x90...0x9f:
-            let elements = UInt(formatByte & 0xF)
-            let arrayValues = parseArrayWithElements(bytes, elements: elements)
-            return (value:arrayValues.value, bytesRead:arrayValues.bytesRead+1)
-        case 0xa0...0xbf:
-            let length = UInt(formatByte & 0x1F)
-            let str:String? = String(bytes: bytes[0..<Int(length)], encoding: NSUTF8StringEncoding)
-            if (str != nil)
-            {
-                return (value:str!, bytesRead:length+1)
-            }
-            else
-            {
-                return (value:"", bytesRead:length+1);
-            }
-        case 0xc0:          //nil type
-            return ("",1)
-        case 0xc1:          //neverused
-            error("Never used symbol found")
-            return ("", 0)
-        case 0xc2:
-            return (false, 1)
-        case 0xc3:
-            return (true, 1)
-        case 0xc4:
-            let results = parseBin(bytes, headerSize: 1)
-            return (results.value, results.bytesRead+1)
-        case 0xc5:
-            let results = parseBin(bytes, headerSize: 2)
-            return (results.value, results.bytesRead+1)
-        case 0xc6:
-            let results = parseBin(bytes, headerSize: 4)
-            return (results.value, results.bytesRead+1)
-        case 0xc7...0xc9:
-            error("Unhandeled type")
-        case 0xca:
-            let float = parseFloat(bytes)
-            return (float, 5)
-        case 0xcb:
-            let double = parseDouble(bytes)
-            return (double, 9)
-        case 0xcc:
-            return (parseUInt(bytes, length: 1), 2)
-        case 0xcd:
-            return (parseUInt(bytes, length: 2), 3)
-        case 0xce:
-            return (parseUInt(bytes, length: 4), 5)
-        case 0xcf:
-            return (parseUInt(bytes, length: 8), 9)
-        case 0xd0:
-            return (Int(parseInt(bytes, type: Int8.self)), 2)
-        case 0xd1:
-            return (Int(parseInt(bytes, type: Int16.self)), 3)
-        case 0xd2:
-            return (Int(parseInt(bytes, type: Int32.self)), 5)
-        case 0xd3:
-            return (Int(parseInt(bytes, type: Int64.self)), 9)
-        case 0xd4...0xd8:
-            error("Unhandeled type")
-        case 0xd9:
-            let results = parseStr(bytes, headerSize: 1)
-            return (results.value, results.bytesRead+1)
-        case 0xda:
-            let results = parseStr(bytes, headerSize: 2)
-            return (results.value, results.bytesRead+1)
-        case 0xdb:
-            let results = parseStr(bytes, headerSize: 4)
-            return (results.value, results.bytesRead+1)
-        case 0xdc:
-            let results = parseArray(bytes, headerSize: 2)
-            return(results.value, results.bytesRead+1)
-        case 0xdd:
-            let results = parseArray(bytes, headerSize: 4)
-            return(results.value, results.bytesRead+1)
-        case 0xde:
-            let results = parseMap(bytes, headerSize: 2)
-            return(results.value, results.bytesRead+1)
-        case 0xdf:
-            let results = parseMap(bytes, headerSize: 4)
-            return(results.value, results.bytesRead+1)
-        case 0xe0...0xff:
-            let fixnum = Int(unsafeBitCast(formatByte, Int8.self))
-            return (fixnum, 1)
+        {
+            case 0x00...0x7f:
+                return (Int(formatByte), 1)
             
-        default:
-            error("Unknown type")
+            case 0x80...0x8f:
+                let elements = UInt(formatByte & 0xF)
+                let mapValues = parseMapWithElements(bytes, elements: elements)
+                return (value:mapValues.value, bytesRead:mapValues.bytesRead+1)
+            
+            case 0x90...0x9f:
+                let elements = UInt(formatByte & 0xF)
+                let arrayValues = parseArrayWithElements(bytes, elements: elements)
+                return (value:arrayValues.value, bytesRead:arrayValues.bytesRead+1)
+            
+            case 0xa0...0xbf:
+                let length = UInt(formatByte & 0x1F)
+                let str:String? = String(bytes: bytes[0..<Int(length)], encoding: NSUTF8StringEncoding)
+                if (str != nil)
+                {
+                    return (value:str!, bytesRead:length+1)
+                }
+                else
+                {
+                    return (value:"", bytesRead:length+1);
+                }
+            
+            case 0xc0:          //nil type
+                return ("",1)
+            
+            case 0xc1:          //neverused
+                error("Never used symbol found")
+                return ("", 0)
+            
+            case 0xc2:
+                return (false, 1)
+            
+            case 0xc3:
+                return (true, 1)
+            
+            case 0xc4:
+                let results = parseBin(bytes, headerSize: 1)
+                return (results.value, results.bytesRead+1)
+            
+            case 0xc5:
+                let results = parseBin(bytes, headerSize: 2)
+                return (results.value, results.bytesRead+1)
+            
+            case 0xc6:
+                let results = parseBin(bytes, headerSize: 4)
+                return (results.value, results.bytesRead+1)
+            
+            case 0xc7...0xc9:
+                error("Unhandeled type")
+            
+            case 0xca:
+                let float = parseFloat(bytes)
+                return (float, 5)
+            
+            case 0xcb:
+                let double = parseDouble(bytes)
+                return (double, 9)
+            
+            case 0xcc:
+                return (parseUInt(bytes, length: 1), 2)
+            
+            case 0xcd:
+                return (parseUInt(bytes, length: 2), 3)
+            
+            case 0xce:
+                return (parseUInt(bytes, length: 4), 5)
+            
+            case 0xcf:
+                return (parseUInt(bytes, length: 8), 9)
+            
+            case 0xd0:
+                return (Int(parseInt(bytes, type: Int8.self)), 2)
+            
+            case 0xd1:
+                return (Int(parseInt(bytes, type: Int16.self)), 3)
+            
+            case 0xd2:
+                return (Int(parseInt(bytes, type: Int32.self)), 5)
+            
+            case 0xd3:
+                return (Int(parseInt(bytes, type: Int64.self)), 9)
+            
+            case 0xd4...0xd8:
+                error("Unhandeled type")
+            
+            
+            case 0xd9:
+                let results = parseStr(bytes, headerSize: 1)
+                return (results.value, results.bytesRead+1)
+            
+            case 0xda:
+                let results = parseStr(bytes, headerSize: 2)
+                return (results.value, results.bytesRead+1)
+            
+            case 0xdb:
+                let results = parseStr(bytes, headerSize: 4)
+                return (results.value, results.bytesRead+1)
+            
+            case 0xdc:
+                let results = parseArray(bytes, headerSize: 2)
+                return(results.value, results.bytesRead+1)
+            
+            case 0xdd:
+                let results = parseArray(bytes, headerSize: 4)
+                return(results.value, results.bytesRead+1)
+            
+            case 0xde:
+                let results = parseMap(bytes, headerSize: 2)
+                return(results.value, results.bytesRead+1)
+            
+            case 0xdf:
+                let results = parseMap(bytes, headerSize: 4)
+                return(results.value, results.bytesRead+1)
+            
+            case 0xe0...0xff:
+                //swift won't do the right thing here so hack it
+                let tmp = Int(formatByte);
+                let value:Int = tmp-256;
+                return (value, 1)
+                
+            default:
+                error("Unknown type")
         }
         
         return ("", 0)
@@ -214,7 +247,7 @@ public class Unpacker
         var headerBytes = Array<UInt8>(bytes[0..<Int(headerSize)].reverse())
         memcpy(&length, headerBytes, Int(headerSize))
 
-        let dataBytes = Array<UInt8>(bytes[Int(headerSize)...Int(length)]);
+        let dataBytes = Array<UInt8>(bytes[Int(headerSize)...Int(length)+1]);
         let size = length+headerSize
         return (NSData(bytes: dataBytes, length: dataBytes.count), size)
     }
