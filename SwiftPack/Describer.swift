@@ -11,12 +11,12 @@ import SwiftPack
 
 public class Describer
 {
-    public class func describeBytes(bytesIn:[UInt8]) -> (descriptions:Array<String>, bytesRead:UInt)
+    public class func describeBytes(bytesIn:[UInt8]) -> (descriptions:Array<String>, bytesRead:Int)
     {
-        var bytesRead:UInt = 0
+        var bytesRead:Int = 0
         var values = Array<String>()
         
-        while (UInt(bytesIn.count) > bytesRead)
+        while (bytesIn.count > bytesRead)
         {
             let result = describeMsgPackBytes(ArraySlice(bytesIn), indent:"");
             bytesRead += result.bytesRead
@@ -26,9 +26,9 @@ public class Describer
         return (values, bytesRead:bytesRead)
     }
     
-    public class func parseMap(bytesIn:ArraySlice<UInt8>, headerSize:UInt, indent:String)->(description:String, bytesRead:UInt, elements:UInt)
+    public class func parseMap(bytesIn:ArraySlice<UInt8>, headerSize:Int, indent:String)->(description:String, bytesRead:Int, elements:Int)
     {
-        var elements:UInt = 0
+        var elements:Int = 0
         var headerBytes = Array<UInt8>(bytesIn[0..<Int(headerSize)].reverse())
         memcpy(&elements, headerBytes, Int(headerSize))
         let results = parseMapWithElements(bytesIn[Int(headerSize)..<bytesIn.count], elements:elements, indent: indent)
@@ -36,11 +36,11 @@ public class Describer
         return (description:results.description, bytesRead:results.bytesRead, elements:elements)
     }
     
-    public class func parseMapWithElements(bytesIn:ArraySlice<UInt8>, elements:UInt, indent:String)->(description:String, bytesRead:UInt)
+    public class func parseMapWithElements(bytesIn:ArraySlice<UInt8>, elements:Int, indent:String)->(description:String, bytesRead:Int)
     {
         var bytes = bytesIn
         var description = String()
-        var bytesRead:UInt = 0
+        var bytesRead:Int = 0
         for i in 0..<elements
         {
             let nextIndent = "\t\(indent)"
@@ -75,9 +75,9 @@ public class Describer
         return (description, bytesRead)
     }
 
-    public class func parseArray(bytesIn:ArraySlice<UInt8>, headerSize:UInt, indent:String)->(description:String, bytesRead:UInt, elements:UInt)
+    public class func parseArray(bytesIn:ArraySlice<UInt8>, headerSize:Int, indent:String)->(description:String, bytesRead:Int, elements:Int)
     {
-        var elements:UInt = 0
+        var elements:Int = 0
         var headerBytes = Array<UInt8>(bytesIn[0..<Int(headerSize)].reverse())
         memcpy(&elements, headerBytes, Int(headerSize))
         let results = parseArrayWithElements(bytesIn[Int(headerSize)..<bytesIn.count], elements: elements, indent:indent)
@@ -85,10 +85,10 @@ public class Describer
         return (results.description, results.bytesRead+headerSize, elements:elements)
     }
     
-    public class func parseArrayWithElements(bytesIn:ArraySlice<UInt8>, elements:UInt, indent:String)->(description:String, bytesRead:UInt)
+    public class func parseArrayWithElements(bytesIn:ArraySlice<UInt8>, elements:Int, indent:String)->(description:String, bytesRead:Int)
     {
         var description = ""
-        var bytesRead:UInt = 0
+        var bytesRead:Int = 0
         var bytes = bytesIn
         for i in 0..<elements
         {
@@ -101,12 +101,12 @@ public class Describer
         return (description, bytesRead)
     }
     
-    public class func describeMsgPackBytes(bytesIn:ArraySlice<UInt8>, indent:String) -> (description:String, bytesRead:UInt)
+    public class func describeMsgPackBytes(bytesIn:ArraySlice<UInt8>, indent:String) -> (description:String, bytesRead:Int)
     {
-        let formatByte:UInt = UInt(bytesIn[0]) //Cast this up to a UInt so the switch doesn't crash
+        let formatByte:Int = Int(bytesIn[0]) //Cast this up to a Int so the switch doesn't crash
         let bytes = dropFirst(bytesIn)
         
-        var bytesRead:UInt = 1;
+        var bytesRead:Int = 1;
         var description = ""
         
         switch formatByte
@@ -115,19 +115,19 @@ public class Describer
             description = "FixInt:\(formatByte)"
             
         case 0x80...0x8f:
-            let elements = UInt(formatByte & 0xF)
+            let elements = Int(formatByte & 0xF)
             let mapValues = parseMapWithElements(bytes, elements:elements, indent:indent)
             description = "FixMap:\(elements) \(mapValues.description)"
             bytesRead += mapValues.bytesRead
             
         case 0x90...0x9f:
-            let elements = UInt(formatByte & 0xF)
+            let elements = Int(formatByte & 0xF)
             let parsed = parseArrayWithElements(bytes, elements: elements, indent:indent)
             description = "FixArray:\(elements) \(parsed.description)"
             bytesRead += parsed.bytesRead
             
         case 0xa0...0xbf:
-            let length = UInt(formatByte & 0x1F)
+            let length = Int(formatByte & 0x1F)
             let str:String? = String(bytes: bytes[0..<Int(length)], encoding: NSUTF8StringEncoding)
             if (str != nil)
             {

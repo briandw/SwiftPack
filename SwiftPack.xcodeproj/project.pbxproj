@@ -11,9 +11,10 @@
 		D365F9A519BD268500160701 /* SwiftPack.h in Headers */ = {isa = PBXBuildFile; fileRef = D365F9A419BD268500160701 /* SwiftPack.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D365F9BF19BD269F00160701 /* Packer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D365F99719BD233100160701 /* Packer.swift */; };
 		D365F9C019BD26A500160701 /* Unpacker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D365F99819BD233100160701 /* Unpacker.swift */; };
+		D36CAE1D1AEE8CDB000E6D68 /* Unpacker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D365F99819BD233100160701 /* Unpacker.swift */; };
+		D36CAE1E1AEE8CEF000E6D68 /* Unpacker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D365F99819BD233100160701 /* Unpacker.swift */; };
 		D37D778419BD2D6C0066F982 /* SwiftPackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37D778319BD2D6C0066F982 /* SwiftPackTests.swift */; };
 		D37D778819BD694F0066F982 /* Packer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D365F99719BD233100160701 /* Packer.swift */; };
-		D37D778919BD69FC0066F982 /* Unpacker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D365F99819BD233100160701 /* Unpacker.swift */; };
 		D3B325051AAFFD330098A72F /* Describer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B325041AAFFD330098A72F /* Describer.swift */; };
 		D3B325061AAFFD330098A72F /* Describer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B325041AAFFD330098A72F /* Describer.swift */; };
 		D3C11F281ABB1CC6008757B1 /* DescriberTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C11F271ABB1CC6008757B1 /* DescriberTest.swift */; };
@@ -28,6 +29,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		D36CAE1F1AEE90A6000E6D68 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D365F96D19BD22B600160701 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D3F2D18C1A2A5656004E3DDC;
+			remoteInfo = Unpacker;
+		};
 		D3F2D1BB1A2A5767004E3DDC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D365F96D19BD22B600160701 /* Project object */;
@@ -214,6 +222,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				D36CAE201AEE90A6000E6D68 /* PBXTargetDependency */,
 			);
 			name = SwiftPackTests;
 			productName = SwiftPackTests;
@@ -253,7 +262,7 @@
 					};
 					D37D777E19BD2D6C0066F982 = {
 						CreatedOnToolsVersion = 6.0;
-						TestTargetID = D365F97419BD22B600160701;
+						TestTargetID = D3F2D18C1A2A5656004E3DDC;
 					};
 					D3F2D18C1A2A5656004E3DDC = {
 						CreatedOnToolsVersion = 6.2;
@@ -323,8 +332,8 @@
 			files = (
 				D37D778419BD2D6C0066F982 /* SwiftPackTests.swift in Sources */,
 				D3C11F281ABB1CC6008757B1 /* DescriberTest.swift in Sources */,
+				D36CAE1E1AEE8CEF000E6D68 /* Unpacker.swift in Sources */,
 				EA91194F1A48A4CD00904785 /* UnpackerUnsignedIntegerTestCase.swift in Sources */,
-				D37D778919BD69FC0066F982 /* Unpacker.swift in Sources */,
 				EA6606521A45F3CF0017C0C6 /* UnpackerIntegerTestCase.swift in Sources */,
 				EA2A826C1A45B2220008BD65 /* PackerIntegerTestCase.swift in Sources */,
 				D37D778819BD694F0066F982 /* Packer.swift in Sources */,
@@ -337,6 +346,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D3F2D1AB1A2A56A5004E3DDC /* AppDelegate.swift in Sources */,
+				D36CAE1D1AEE8CDB000E6D68 /* Unpacker.swift in Sources */,
 				D3B325061AAFFD330098A72F /* Describer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -344,6 +354,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		D36CAE201AEE90A6000E6D68 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D3F2D18C1A2A5656004E3DDC /* Unpacker */;
+			targetProxy = D36CAE1F1AEE90A6000E6D68 /* PBXContainerItemProxy */;
+		};
 		D3F2D1BC1A2A5767004E3DDC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D365F99F19BD268500160701 /* SwiftPack */;
@@ -500,7 +515,7 @@
 				INFOPLIST_FILE = SwiftPackTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/UnPacker.app/Contents/MacOS/UnPacker";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Unpacker.app/Contents/MacOS/Unpacker";
 			};
 			name = Debug;
 		};
@@ -516,7 +531,7 @@
 				INFOPLIST_FILE = SwiftPackTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/UnPacker.app/Contents/MacOS/UnPacker";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Unpacker.app/Contents/MacOS/Unpacker";
 			};
 			name = Release;
 		};
