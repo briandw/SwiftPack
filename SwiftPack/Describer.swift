@@ -223,23 +223,28 @@ public class Describer
         
         case 0xd4:
             description = "Fixext1"
-            bytesRead += 1
+            let results = Unpacker.parseBin(bytes, headerSize: 1)
+            bytesRead += results.bytesRead
             
         case 0xd5:
             description = "Fixext2"
-            bytesRead += 2
+            let results = Unpacker.parseBin(bytes, headerSize: 2)
+            bytesRead += results.bytesRead
             
         case 0xd6:
             description = "Fixext4"
-            bytesRead += 4
+            let results = Unpacker.parseBin(bytes, headerSize: 4)
+            bytesRead += results.bytesRead
             
         case 0xd7:
             description = "Fixext8"
-            bytesRead += 8
+            let results = Unpacker.parseBin(bytes, headerSize: 8)
+            bytesRead += results.bytesRead
             
         case 0xd8:
             description = "Fixext16"
-            bytesRead += 16
+            let results = Unpacker.parseBin(bytes, headerSize: 16)
+            bytesRead += results.bytesRead
             
         case 0xd9:
             let results = Unpacker.parseStr(bytes, headerSize: 1)
