@@ -77,7 +77,7 @@ public class Unpacker
         let bytes = dropFirst(bytesIn)
         
         var bytesRead:Int = 1
-        var value:AnyObject = 0 as NSNumber
+        var value:AnyObject = 0
         
         switch formatByte
         {
@@ -166,19 +166,19 @@ public class Unpacker
                 bytesRead += 8
             
             case 0xd0:
-                value = parseInt(bytes, type: Int8.self)
+                value = parseInt(bytes, length:1)
                 bytesRead += 1
             
             case 0xd1:
-                value = parseInt(bytes, type: Int16.self)
+                value = parseInt(bytes, length:2)
                 bytesRead += 2
             
             case 0xd2:
-                value = parseInt(bytes, type: Int32.self)
+                value = parseInt(bytes, length:4)
                 bytesRead += 4
             
             case 0xd3:
-                value = parseInt(bytes, type: Int64.self)
+                value = parseInt(bytes, length:8)
                 bytesRead += 8
             
             case 0xd4:
@@ -254,12 +254,12 @@ public class Unpacker
         return (value, bytesRead)
     }
 
-    public class func parseInt<T: IntegerType>(data: ArraySlice<UInt8>, type: T.Type) -> NSNumber {
-        var int:T = 0
-        var intBytes = unsafeBitCast(data, ArraySlice<Int8>.self)
-        let length = sizeof(type)
-        memcpy(&int, [Int8](intBytes.reverse()), length)
-        return int as! NSNumber
+    public class func parseInt(bytes: ArraySlice<UInt8>, length:Int)->Int
+    {
+        var int:Int = 0
+        var intBytes = bytes[0..<length].reverse()
+        memcpy(&int, Array<UInt8>(intBytes), length)
+        return int
     }
 
    public class func parseUInt(bytes:ArraySlice<UInt8>, length:Int)->UInt

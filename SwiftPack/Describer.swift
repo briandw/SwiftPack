@@ -26,7 +26,7 @@ public class Describer
         return (values, bytesRead:bytesRead)
     }
     
-    public class func parseMap(bytesIn:ArraySlice<UInt8>, headerSize:Int, indent:String)->(description:String, bytesRead:Int, elements:Int)
+    public class func parseMap(bytesIn:ArraySlice<UInt8>, headerSize:UInt, indent:String)->(description:String, bytesRead:Int, elements:Int)
     {
         var elements:Int = 0
         var headerBytes = Array<UInt8>(bytesIn[0..<Int(headerSize)].reverse())
@@ -103,7 +103,7 @@ public class Describer
     
     public class func describeMsgPackBytes(bytesIn:ArraySlice<UInt8>, indent:String) -> (description:String, bytesRead:Int)
     {
-        let formatByte:Int = Int(bytesIn[0]) //Cast this up to a Int so the switch doesn't crash
+        let formatByte:UInt = UInt(bytesIn[0]) //Cast this up to a UInt so the switch doesn't crash
         let bytes = dropFirst(bytesIn)
         
         var bytesRead:Int = 1;
@@ -156,7 +156,7 @@ public class Describer
         case 0xc4:
             let results = Unpacker.parseBin(bytes, headerSize: 1)
             description = "Bin8:\(results.bytesRead-1):\(results.value)"
-            bytesRead += results.bytesRead
+            bytesRead = bytesRead + results.bytesRead
             
         case 0xc5:
             let results = Unpacker.parseBin(bytes, headerSize: 2)
@@ -202,22 +202,22 @@ public class Describer
             bytesRead += 8
             
         case 0xd0:
-            let value = Unpacker.parseInt(bytes, type: Int8.self)
+            let value = Unpacker.parseInt(bytes, length: 1)
             description = "Int8:\(value)"
             bytesRead += 1
             
         case 0xd1:
-            let value = Unpacker.parseInt(bytes, type: Int16.self)
+            let value = Unpacker.parseInt(bytes, length: 2)
             description = "Int16:\(value)"
             bytesRead += 2
             
         case 0xd2:
-            let value = Unpacker.parseInt(bytes, type: Int32.self)
+            let value = Unpacker.parseInt(bytes, length: 4)
             description = "Int32:\(value)"
             bytesRead += 4
     
         case 0xd3:
-            let value = Unpacker.parseInt(bytes, type: Int64.self)
+            let value = Unpacker.parseInt(bytes, length: 8)
             description = "Int64:\(value)"
             bytesRead += 8
         
@@ -249,7 +249,7 @@ public class Describer
         case 0xd9:
             let results = Unpacker.parseStr(bytes, headerSize: 1)
             description = "Str8:\(results.length):\(results.value)"
-            bytesRead += 1
+            bytesRead += results.bytesRead
             
         case 0xda:
             let results = Unpacker.parseStr(bytes, headerSize: 2)
