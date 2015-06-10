@@ -12,19 +12,19 @@ import SwiftPack
 ///util
 func error(errorMessage:String)
 {
-    println("error" + errorMessage)
+    print("error" + errorMessage)
 }
 
 extension String {
     subscript (i: Int) -> String
     {
-        return String(Array(self)[i])
+        return String(Array(self.characters)[i])
     }
     
     subscript (r: Range<Int>) -> String
     {
-        var start = advance(startIndex, r.startIndex)
-        var end = advance(startIndex, r.endIndex)
+        let start = advance(startIndex, r.startIndex)
+        let end = advance(startIndex, r.endIndex)
         return substringWithRange(Range(start: start, end: end))
     }
 }
@@ -150,7 +150,7 @@ public class Unpacker
                 bytesRead += 9
             
             case 0xcc:
-                let value = parseUInt(bytes, length: 1)
+                value = parseUInt(bytes, length: 1)
                 bytesRead += 1
             
             case 0xcd:
@@ -257,7 +257,7 @@ public class Unpacker
     public class func parseInt(bytes: ArraySlice<UInt8>, length:Int)->Int
     {
         var int:Int = 0
-        var intBytes = bytes[0..<length].reverse()
+        let intBytes = Array(bytes[0..<length].reverse())
         memcpy(&int, Array<UInt8>(intBytes), length)
         return int
     }
@@ -265,7 +265,7 @@ public class Unpacker
    public class func parseUInt(bytes:ArraySlice<UInt8>, length:Int)->UInt
     {
         var uint:UInt = 0
-        var intBytes = bytes[0..<length].reverse()
+        let intBytes = Array(bytes[0..<length].reverse())
         memcpy(&uint, Array<UInt8>(intBytes), length)
         return uint
     }
@@ -274,7 +274,7 @@ public class Unpacker
     {
         //reverse bytes first?
         var f:Float = 0.0
-        var floatBytes = Array<UInt8>(bytes[0..<4].reverse())
+        let floatBytes = Array<UInt8>(Array(bytes[0..<4].reverse()))
         memcpy(&f, floatBytes, 4)
         return f
     }
@@ -283,7 +283,7 @@ public class Unpacker
     {
         //reverse bytes first?
         var d:Double = 0.0
-        var doubleBytes = Array<UInt8>(bytes[0..<8].reverse())
+        let doubleBytes = Array<UInt8>(Array(bytes[0..<8].reverse()))
         memcpy(&d, doubleBytes, 8)
         return d
     }
@@ -291,7 +291,7 @@ public class Unpacker
     public class func parseBin(bytes:ArraySlice<UInt8>, headerSize:Int) -> (value:AnyObject, bytesRead:Int)
     {
         var length:Int = 0
-        var headerBytes = Array<UInt8>(bytes[0..<headerSize].reverse())
+        let headerBytes = Array<UInt8>(Array(bytes[0..<headerSize].reverse()))
         memcpy(&length, headerBytes, headerSize)
 
         let slice = bytes[headerSize...length]
@@ -303,10 +303,10 @@ public class Unpacker
     public class func parseMap(bytes:ArraySlice<UInt8>, headerSize:Int)->(value:Dictionary<String, AnyObject>, bytesRead:Int)
     {
         var elements:Int = 0
-        var headerBytes = Array<UInt8>(bytes[0..<Int(headerSize)].reverse())
+        let headerBytes = Array<UInt8>(Array(bytes[0..<Int(headerSize)].reverse()))
         memcpy(&elements, headerBytes, Int(headerSize))
         
-        var results = parseMapWithElements(bytes[headerSize..<bytes.count], elements: elements)
+        let results = parseMapWithElements(bytes[headerSize..<bytes.count], elements: elements)
         
         return (results.value, results.bytesRead+headerSize)
     }
@@ -316,7 +316,7 @@ public class Unpacker
         var bytes = bytesIn
         var dict = Dictionary<String, AnyObject>(minimumCapacity: Int(elements))
         var bytesRead:Int = 0
-        for i in 0..<elements
+        for _ in 0..<elements
         {
             let keyResults = parseBytes(bytes)
             bytesRead += keyResults.bytesRead
@@ -338,7 +338,7 @@ public class Unpacker
     public class func parseArray(bytesIn:ArraySlice<UInt8>, headerSize:Int)->(value:AnyObject, bytesRead:Int)
     {
         var elements:Int = 0
-        var headerBytes = Array<UInt8>(bytesIn[0..<Int(headerSize)].reverse())
+        let headerBytes = Array<UInt8>(Array(bytesIn[0..<Int(headerSize)].reverse()))
         memcpy(&elements, headerBytes, Int(headerSize))
         let results = parseArrayWithElements(bytesIn[Int(headerSize)...bytesIn.count], elements: elements)
         
@@ -350,7 +350,7 @@ public class Unpacker
         var bytesRead:Int = 0
         var bytes = bytesIn
         var array = [AnyObject]()
-        for i in 0..<elements
+        for _ in 0..<elements
         {
             let results = parseBytes(bytes)
             array.append(results.value)
@@ -364,7 +364,7 @@ public class Unpacker
     public class func parseStr(bytes:ArraySlice<UInt8>, headerSize:Int)->(value:String, bytesRead:Int, length:Int)
     {
         var length:Int = 0
-        var headerBytes = Array<UInt8>(bytes[0..<Int(headerSize)].reverse())
+        let headerBytes = Array<UInt8>(Array(bytes[0..<Int(headerSize)].reverse()))
         memcpy(&length, headerBytes, Int(headerSize))
         
         if (headerSize+length <= bytes.count)
@@ -409,10 +409,10 @@ public class Unpacker
     {
         var string = ""
         var localByte = byte
-        for j in 0..<2
+        for _ in 0..<2
         {
             var letter = ""
-            var tmp = localByte & 240
+            let tmp = localByte & 240
             switch(tmp >> 4)
                 {
             case 0:
@@ -461,7 +461,7 @@ public class Unpacker
     public class func hexStringToByteArray(stringIn:String) -> Array<UInt8>
     {
         var hexString = ""
-        for character in stringIn
+        for character in stringIn.characters
         {
             if (character != " ")
             {
@@ -471,7 +471,7 @@ public class Unpacker
         
         hexString = hexString.uppercaseString
         var bytes = [UInt8]()
-        var stringLength = count(hexString)
+        var stringLength = hexString.characters.count
         if (stringLength % 2 != 0)
         {
             stringLength -= 1;
@@ -479,8 +479,8 @@ public class Unpacker
         
         for var i:Int = 0; i < stringLength; i += 2
         {
-            var sub = hexString[i..<i+2]
-            var byte:UInt8 = charPairToByte(sub)
+            let sub = hexString[i..<i+2]
+            let byte:UInt8 = charPairToByte(sub)
             bytes.append(byte)
         }
         
@@ -490,7 +490,7 @@ public class Unpacker
     class func charPairToByte(strIn:String) -> UInt8
     {
         var byte:UInt8 = 0
-        for c in strIn
+        for c in strIn.characters
         {
             var number:UInt8 = 0
             byte = byte << 4
@@ -529,7 +529,7 @@ public class Unpacker
                 case "F":
                     number = 15
                 default:
-                    println("bad char \(c)")
+                    print("bad char \(c)")
             }
             byte = byte | number
         }

@@ -30,16 +30,16 @@ class SwiftPack_Tests: XCTestCase {
         let msgPackCase =  Unpacker.hexStringToByteArray(msgPackCaseHex)
         
         
-            println("Simple MsgPack")
+            print("Simple MsgPack")
             var result:Any = Unpacker.unPackByteArray(simple)
-            println(result)
+            print(result)
             
             //var bytes = pack(result)
             
             //print(bytes)
-            println("MsgPack test case")
+            print("MsgPack test case")
             result = Unpacker.unPackByteArray(msgPackCase)
-            println(result)
+            print(result)
     }
     
     func testPacker() {

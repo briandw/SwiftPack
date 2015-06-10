@@ -29,7 +29,7 @@ public class Describer
     public class func parseMap(bytesIn:ArraySlice<UInt8>, headerSize:UInt, indent:String)->(description:String, bytesRead:Int, elements:Int)
     {
         var elements:Int = 0
-        var headerBytes = Array<UInt8>(bytesIn[0..<Int(headerSize)].reverse())
+        let headerBytes = Array<UInt8>(Array(bytesIn[0..<Int(headerSize)].reverse()))
         memcpy(&elements, headerBytes, Int(headerSize))
         let results = parseMapWithElements(bytesIn[Int(headerSize)..<bytesIn.count], elements:elements, indent: indent)
         
@@ -41,7 +41,7 @@ public class Describer
         var bytes = bytesIn
         var description = String()
         var bytesRead:Int = 0
-        for i in 0..<elements
+        for _ in 0..<elements
         {
             let nextIndent = "\t\(indent)"
             let keyResults = describeMsgPackBytes(bytes, indent:nextIndent)
@@ -78,7 +78,7 @@ public class Describer
     public class func parseArray(bytesIn:ArraySlice<UInt8>, headerSize:Int, indent:String)->(description:String, bytesRead:Int, elements:Int)
     {
         var elements:Int = 0
-        var headerBytes = Array<UInt8>(bytesIn[0..<Int(headerSize)].reverse())
+        let headerBytes = Array<UInt8>(Array(bytesIn[0..<Int(headerSize)].reverse()))
         memcpy(&elements, headerBytes, Int(headerSize))
         let results = parseArrayWithElements(bytesIn[Int(headerSize)..<bytesIn.count], elements: elements, indent:indent)
         
@@ -90,7 +90,7 @@ public class Describer
         var description = ""
         var bytesRead:Int = 0
         var bytes = bytesIn
-        for i in 0..<elements
+        for _ in 0..<elements
         {
             let results = describeMsgPackBytes(bytes, indent:indent)
             description += "\n\(indent)\(results.description)"

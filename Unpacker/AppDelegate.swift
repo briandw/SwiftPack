@@ -41,19 +41,18 @@ class AppDelegate: NSObject, NSApplicationDelegate
     @IBAction func readPasteBoard(x:AnyObject)
     {
         let pb = NSPasteboard.generalPasteboard()
-        let clazz:AnyObject = classFromType(NSString.self)
         
         var output = ""
         
-        if let items = pb.readObjectsForClasses([clazz], options:nil)
+        if let items = pb.readObjectsForClasses([NSString.classForCoder()], options:nil)
         {
             for hexString in items
             {
                 let bytes:Array<UInt8> = Unpacker.hexStringToByteArray(hexString as! String)
                 if (bytes.count > 0)
                 {
-                    var result = Describer.describeBytes(bytes)
-                    var descriptions:Array<String> = result.descriptions
+                    let result = Describer.describeBytes(bytes)
+                    let descriptions:Array<String> = result.descriptions
                     if (descriptions.count == 0)
                     {
                         output = "unparsable"

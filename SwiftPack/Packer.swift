@@ -53,7 +53,7 @@ public class Packer
                 localBytes = [value]
             
             default:
-                println("Error: Can't pack type")
+                print("Error: Can't pack type")
         }
 
         return localBytes
@@ -86,7 +86,7 @@ public class Packer
 
         var data = [UInt8](count: size, repeatedValue: 0)
         memcpy(&data, &uint, size)
-        return [formatByte] + data.reverse()
+        return [formatByte] + Array(data.reverse())
     }
 
     class func packInt(var int:Int, bytes:[UInt8]) -> [UInt8]
@@ -116,12 +116,12 @@ public class Packer
 
         var data = [Int8](count: size, repeatedValue: 0)
         memcpy(&data, &int, size)
-        return [formatByte] + unsafeBitCast(reverse(data), [UInt8].self)
+        return [formatByte] + unsafeBitCast(Array(data.reverse()), [UInt8].self)
     }
 
     class func packFloat(float:Float, bytes:[UInt8]) -> [UInt8]
     {
-        var localFloat = float
+        let localFloat = float
         var localBytes:Array<UInt8> = bytes
         localBytes.append(0xCA)
         
@@ -131,13 +131,13 @@ public class Packer
     class func packDouble(double:Double, bytes:[UInt8]) -> [UInt8]
     {
         let localBytes:Array<UInt8> = copyBytes(double, length: sizeof(Double), bytes: bytes)
-        return [0xCB] + localBytes.reverse()
+        return [0xCB] + Array(localBytes.reverse())
     }
 
     class func packBin(bin:[UInt8], bytes:[UInt8]) -> [UInt8]
     {
         var localBytes:Array<UInt8> = bytes
-        let length = Int32(count(bin))
+        let length = Int32(bin.count)
         if (length < 0x10)
         {
             localBytes.append(UInt8(0xC4))
@@ -164,7 +164,7 @@ public class Packer
         var stringBuff = [UInt8]()
         stringBuff += string.utf8
 
-        var length = stringBuff.count
+        let length = stringBuff.count
         if (length < 0x20)
         {
             localBytes.append(UInt8(0xA0 | UInt8(length)))
@@ -195,7 +195,7 @@ public class Packer
     class func packArray(array:Array<Any>, bytes:[UInt8]) -> [UInt8]
     {
         var localBytes = bytes
-        var items = Int32(count(array))
+        let items = Int32(array.count)
         if (items < 0x10)
         {
             localBytes.append(UInt8(0x90 | UInt8(items)))
@@ -225,7 +225,7 @@ public class Packer
     class func packDictionary(dict:Dictionary<String, Any>, bytes:[UInt8]) -> [UInt8]
     {
         var localBytes = bytes
-        var elements = Int32(count(dict))
+        let elements = Int32(dict.count)
         if (elements < 0x10)
         {
             localBytes.append(UInt8(0x80 | UInt8(elements)))
@@ -265,12 +265,12 @@ public class Packer
             case 0x10..<0x100:
                 lengthBytes = Array<UInt8>(count:2, repeatedValue:0)
                 memcpy(&lengthBytes, &length, 2)
-                lengthBytes = lengthBytes.reverse()
+                lengthBytes = Array(lengthBytes.reverse())
                 
             case 0x100..<0x10000:
                 lengthBytes = Array<UInt8>(count:4, repeatedValue:0)
                 memcpy(&lengthBytes, &length, 4)
-                lengthBytes = lengthBytes.reverse()
+                lengthBytes = Array(lengthBytes.reverse())
                 
             default:
                 error("Unknown length")
