@@ -387,75 +387,15 @@ public class Unpacker
     {
         return hexFromBytes(swiftByteArray(data))
     }
-    
-   public class func hexFromBytes(bytes:[UInt8])-> String
+  
+    public class func hexFromBytes(bytes:[UInt8])-> String
     {
-        var string = ""
-        var i = 0
-        for byte in bytes
-        {
-            string += byteToString(byte)
-            i++
-            if (i%4==0)
-            {
-                string = string+" "
-            }
-        }
-        
-        return string
-    }
-
-    public class func byteToString(byte:UInt8) -> String
-    {
-        var string = ""
-        var localByte = byte
-        for j in 0..<2
-        {
-            var letter = ""
-            var tmp = localByte & 240
-            switch(tmp >> 4)
-                {
-            case 0:
-                letter = "0"
-            case 1:
-                letter = "1"
-            case 2:
-                letter = "2"
-            case 3:
-                letter = "3"
-            case 4:
-                letter = "4"
-            case 5:
-                letter = "5"
-            case 6:
-                letter = "6"
-            case 7:
-                letter = "7"
-            case 8:
-                letter = "8"
-            case 9:
-                letter = "9"
-            case 10:
-                letter = "A"
-            case 11:
-                letter = "B"
-            case 12:
-                letter = "C"
-            case 13:
-                letter = "D"
-            case 14:
-                letter = "E"
-            case 15:
-                letter = "F"
-            default:
-                letter = ""
-            }
-            
-            string = string+letter
-            
-            localByte = localByte << 4
-        }
-        return string
+      var string = ""
+      for byte in bytes
+      {
+        string += String(byte, radix: 16)
+      }
+      return string
     }
 
     public class func hexStringToByteArray(stringIn:String) -> Array<UInt8>
