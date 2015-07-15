@@ -17,15 +17,15 @@ func error(errorMessage:String)
 
 extension String {
     subscript (i: Int) -> String
-    {
-        return String(Array(self.characters)[i])
+        {
+            return String(Array(self.characters)[i])
     }
     
     subscript (r: Range<Int>) -> String
-    {
-        let start = advance(startIndex, r.startIndex)
-        let end = advance(startIndex, r.endIndex)
-        return substringWithRange(Range(start: start, end: end))
+        {
+            let start = advance(startIndex, r.startIndex)
+            let end = advance(startIndex, r.endIndex)
+            return substringWithRange(Range(start: start, end: end))
     }
 }
 
@@ -37,7 +37,7 @@ public class Unpacker
         CFDataGetBytes(data, CFRangeMake(0, data.length), &bytes)
         return bytes
     }
-
+    
     public class func unPackByteArray(bytes:Array<UInt8>)->AnyObject
     {
         var sliceBytes = bytes[0..<bytes.count]
@@ -64,13 +64,13 @@ public class Unpacker
         
         return returnArray
     }
-
+    
     class func unPackData(data:NSData)->Any
     {
         let bytes = swiftByteArray(data)
         return unPackByteArray(bytes)
     }
-
+    
     class func parseBytes(bytesIn:ArraySlice<UInt8>)->(value:AnyObject, bytesRead:Int)
     {
         let formatByte:UInt = UInt(bytesIn[0]) //Cast this up to a UInt so the switch doesn't crash
@@ -81,195 +81,213 @@ public class Unpacker
         
         switch formatByte
         {
-            case 0x00...0x7f:
-                value = Int(formatByte)
+        case 0x00...0x7f:
+            value = Int(formatByte)
             
-            case 0x80...0x8f:
-                let elements = Int(formatByte & 0xF)
-                let result = parseMapWithElements(bytes, elements: elements)
-                value = result.value
-                bytesRead += result.bytesRead
+        case 0x80...0x8f:
+            let elements = Int(formatByte & 0xF)
+            let result = parseMapWithElements(bytes, elements: elements)
+            value = result.value
+            bytesRead += result.bytesRead
             
-            case 0x90...0x9f:
-                let elements = Int(formatByte & 0xF)
-                let result = parseArrayWithElements(bytes, elements: elements)
-                value = result.value
-                bytesRead += result.bytesRead
+        case 0x90...0x9f:
+            let elements = Int(formatByte & 0xF)
+            let result = parseArrayWithElements(bytes, elements: elements)
+            value = result.value
+            bytesRead += result.bytesRead
             
-            case 0xa0...0xbf:
-                let length = Int(formatByte & 0x1F)
-                let str:String? = String(bytes: bytes[0..<length], encoding: NSUTF8StringEncoding)
-                if (str != nil)
-                {
-                    value = str!;
-                }
-                else
-                {
-                    value = "#ERROR#"
-                }
-                
-                bytesRead += length
+        case 0xa0...0xbf:
+            let length = Int(formatByte & 0x1F)
+            let str:String? = String(bytes: bytes[0..<length], encoding: NSUTF8StringEncoding)
+            if (str != nil)
+            {
+                value = str!;
+            }
+            else
+            {
+                value = "#ERROR#"
+            }
             
-            case 0xc0:          //nil type
-                //value = nil
-                error("nil type not handeled")
+            bytesRead += length
             
-            case 0xc1:          //neverused
-                value = "#Never Used#"
+        case 0xc0:          //nil type
+            //value = nil
+            error("nil type not handeled")
             
-            case 0xc2:
-                value = false
+        case 0xc1:          //neverused
+            value = "#Never Used#"
             
-            case 0xc3:
-                value = true
+        case 0xc2:
+            value = false
             
-            case 0xc4:
-                let results = parseBin(bytes, headerSize: 1)
-                value = results.value
-                bytesRead += results.bytesRead
+        case 0xc3:
+            value = true
             
-            case 0xc5:
-                let results = parseBin(bytes, headerSize: 2)
-                value = results.value
-                bytesRead += results.bytesRead
+        case 0xc4:
+            let results = parseBin(bytes, headerSize: 1)
+            value = results.value
+            bytesRead += results.bytesRead
             
-            case 0xc6:
-                let results = parseBin(bytes, headerSize: 4)
-                value = results.value
-                bytesRead += results.bytesRead
+        case 0xc5:
+            let results = parseBin(bytes, headerSize: 2)
+            value = results.value
+            bytesRead += results.bytesRead
             
-            case 0xc7...0xc9:
-                value = "Unhandeled ext"
+        case 0xc6:
+            let results = parseBin(bytes, headerSize: 4)
+            value = results.value
+            bytesRead += results.bytesRead
             
-            case 0xca:
-                value = parseFloat(bytes)
-                bytesRead += 5
+        case 0xc7...0xc9:
+            value = "Unhandeled ext"
             
-            case 0xcb:
-                value = parseDouble(bytes)
-                bytesRead += 9
+        case 0xca:
+            value = parseFloat(bytes)
+            bytesRead += 4
             
-            case 0xcc:
-                value = parseUInt(bytes, length: 1)
-                bytesRead += 1
+        case 0xcb:
+            value = parseDouble(bytes)
+            bytesRead += 8
             
-            case 0xcd:
-                value = parseUInt(bytes, length: 2)
-                bytesRead += 2
+        case 0xcc:
+            value = parseUInt(bytes, length: 1)
+            bytesRead += 1
             
-            case 0xce:
-                value = parseUInt(bytes, length: 4)
-                bytesRead += 4
+        case 0xcd:
+            value = parseUInt(bytes, length: 2)
+            bytesRead += 2
             
-            case 0xcf:
-                value = parseUInt(bytes, length: 8)
-                bytesRead += 8
+        case 0xce:
+            value = parseUInt(bytes, length: 4)
+            bytesRead += 4
             
-            case 0xd0:
-                value = parseInt(bytes, length:1)
-                bytesRead += 1
+        case 0xcf:
+            value = parseUInt(bytes, length: 8)
+            bytesRead += 8
             
-            case 0xd1:
-                value = parseInt(bytes, length:2)
-                bytesRead += 2
+        case 0xd0:
+            value = parseInt(bytes, length:1)
+            bytesRead += 1
             
-            case 0xd2:
-                value = parseInt(bytes, length:4)
-                bytesRead += 4
+        case 0xd1:
+            value = parseInt(bytes, length:2)
+            bytesRead += 2
             
-            case 0xd3:
-                value = parseInt(bytes, length:8)
-                bytesRead += 8
+        case 0xd2:
+            value = parseInt(bytes, length:4)
+            bytesRead += 4
             
-            case 0xd4:
-                let results = parseBin(bytes, headerSize: 1)
-                value = results.value
-                bytesRead += results.bytesRead
+        case 0xd3:
+            value = parseInt(bytes, length:8)
+            bytesRead += 8
             
-            case 0xd5:
-                let results = parseBin(bytes, headerSize: 2)
-                value = results.value
-                bytesRead += results.bytesRead
+        case 0xd4:
+            let results = parseBin(bytes, headerSize: 1)
+            value = results.value
+            bytesRead += results.bytesRead
             
-            case 0xd6:
-                let results = parseBin(bytes, headerSize: 4)
-                value = results.value
-                bytesRead += results.bytesRead
+        case 0xd5:
+            let results = parseBin(bytes, headerSize: 2)
+            value = results.value
+            bytesRead += results.bytesRead
             
-            case 0xd7:
-                let results = parseBin(bytes, headerSize: 8)
-                value = results.value
-                bytesRead += results.bytesRead
+        case 0xd6:
+            let results = parseBin(bytes, headerSize: 4)
+            value = results.value
+            bytesRead += results.bytesRead
             
-            case 0xd8:
-                let results = parseBin(bytes, headerSize: 16)
-                value = results.value
-                bytesRead += results.bytesRead
+        case 0xd7:
+            let results = parseBin(bytes, headerSize: 8)
+            value = results.value
+            bytesRead += results.bytesRead
             
-            case 0xd9:
-                let results = parseStr(bytes, headerSize: 1)
-                value = results.value
-                bytesRead += 1
+        case 0xd8:
+            let results = parseBin(bytes, headerSize: 16)
+            value = results.value
+            bytesRead += results.bytesRead
             
-            case 0xda:
-                let results = parseStr(bytes, headerSize: 2)
-                value = results.value
-                bytesRead += results.bytesRead
+        case 0xd9:
+            let results = parseStr(bytes, headerSize: 1)
+            value = results.value
+            bytesRead += 1
             
-            case 0xdb:
-                let results = parseStr(bytes, headerSize: 4)
-                value = results.value
-                bytesRead += results.bytesRead
+        case 0xda:
+            let results = parseStr(bytes, headerSize: 2)
+            value = results.value
+            bytesRead += results.bytesRead
             
-            case 0xdc:
-                let results = parseArray(bytes, headerSize: 2)
-                value = results.value
-                bytesRead += results.bytesRead
+        case 0xdb:
+            let results = parseStr(bytes, headerSize: 4)
+            value = results.value
+            bytesRead += results.bytesRead
             
-            case 0xdd:
-                let results = parseArray(bytes, headerSize: 4)
-                value = results.value
-                bytesRead += results.bytesRead
+        case 0xdc:
+            let results = parseArray(bytes, headerSize: 2)
+            value = results.value
+            bytesRead += results.bytesRead
             
-            case 0xde:
-                let results = parseMap(bytes, headerSize: 2)
-                value = results.value
-                bytesRead += results.bytesRead
+        case 0xdd:
+            let results = parseArray(bytes, headerSize: 4)
+            value = results.value
+            bytesRead += results.bytesRead
             
-            case 0xdf:
-                let results = parseMap(bytes, headerSize: 4)
-                value = results.value
-                bytesRead += results.bytesRead
+        case 0xde:
+            let results = parseMap(bytes, headerSize: 2)
+            value = results.value
+            bytesRead += results.bytesRead
             
-            case 0xe0...0xff:
-                //swift won't do the right thing here so hack it
-                let tmp = Int(formatByte);
-                value = tmp-256;
+        case 0xdf:
+            let results = parseMap(bytes, headerSize: 4)
+            value = results.value
+            bytesRead += results.bytesRead
             
-            default:
-                value = "Unknown type"
-        
+        case 0xe0...0xff:
+            //swift won't do the right thing here so hack it
+            let tmp = Int(formatByte);
+            value = tmp-256;
+            
+        default:
+            value = "Unknown type"
+            
         }
         
         return (value, bytesRead)
     }
-
+    
     public class func parseInt(bytes: ArraySlice<UInt8>, length:Int)->Int
     {
-        var int:Int = 0
+        var result:Int = 0
         let intBytes = Array(bytes[0..<length].reverse())
-        memcpy(&int, Array<UInt8>(intBytes), length)
-        return int
+        switch length {
+        case 1:
+            var int:Int8 = 0
+            memcpy(&int, Array<UInt8>(intBytes), length)
+            result = Int(int)
+        case 2:
+            var int:Int16 = 0
+            memcpy(&int, Array<UInt8>(intBytes), length)
+            result = Int(int)
+        case 4:
+            var int:Int32 = 0
+            memcpy(&int, Array<UInt8>(intBytes), length)
+            result = Int(int)
+        default:
+            assert(length == 8)
+            var int:Int64 = 0
+            memcpy(&int, Array<UInt8>(intBytes), length)
+            result = Int(int)
+        }
+        return result
     }
-
-   public class func parseUInt(bytes:ArraySlice<UInt8>, length:Int)->UInt
+    
+    public class func parseUInt(bytes:ArraySlice<UInt8>, length:Int)->UInt
     {
         var uint:UInt = 0
         let intBytes = Array(bytes[0..<length].reverse())
         memcpy(&uint, Array<UInt8>(intBytes), length)
         return uint
     }
-
+    
     public class func parseFloat(bytes:ArraySlice<UInt8>)->Float
     {
         //reverse bytes first?
@@ -278,7 +296,7 @@ public class Unpacker
         memcpy(&f, floatBytes, 4)
         return f
     }
-
+    
     public class func parseDouble(bytes:ArraySlice<UInt8>)->Double
     {
         //reverse bytes first?
@@ -287,19 +305,19 @@ public class Unpacker
         memcpy(&d, doubleBytes, 8)
         return d
     }
-
+    
     public class func parseBin(bytes:ArraySlice<UInt8>, headerSize:Int) -> (value:AnyObject, bytesRead:Int)
     {
         var length:Int = 0
         let headerBytes = Array<UInt8>(Array(bytes[0..<headerSize].reverse()))
         memcpy(&length, headerBytes, headerSize)
-
+        
         let slice = bytes[headerSize...length]
         assert(slice.count == length, "Data doesn't match the length");
         let size = length+headerSize
         return (NSData(bytes:Array<UInt8>(slice), length:length), size)
     }
-
+    
     public class func parseMap(bytes:ArraySlice<UInt8>, headerSize:Int)->(value:Dictionary<String, AnyObject>, bytesRead:Int)
     {
         var elements:Int = 0
@@ -310,7 +328,7 @@ public class Unpacker
         
         return (results.value, results.bytesRead+headerSize)
     }
-
+    
     public class func parseMapWithElements(bytesIn:ArraySlice<UInt8>, elements:Int)->(value:Dictionary<String, AnyObject>, bytesRead:Int)
     {
         var bytes = bytesIn
@@ -334,7 +352,7 @@ public class Unpacker
         
         return (dict, bytesRead)
     }
-
+    
     public class func parseArray(bytesIn:ArraySlice<UInt8>, headerSize:Int)->(value:AnyObject, bytesRead:Int)
     {
         var elements:Int = 0
@@ -344,7 +362,7 @@ public class Unpacker
         
         return (results.value, results.bytesRead+headerSize)
     }
-
+    
     public class func parseArrayWithElements(bytesIn:ArraySlice<UInt8>, elements:Int)->(value:AnyObject, bytesRead:Int)
     {
         var bytesRead:Int = 0
@@ -360,7 +378,7 @@ public class Unpacker
         
         return (array, bytesRead)
     }
-
+    
     public class func parseStr(bytes:ArraySlice<UInt8>, headerSize:Int)->(value:String, bytesRead:Int, length:Int)
     {
         var length:Int = 0
@@ -382,22 +400,22 @@ public class Unpacker
         
         return ("", 1, 0)
     }
-
-   public class func hexFromData(data:NSData) -> String
+    
+    public class func hexFromData(data:NSData) -> String
     {
         return hexFromBytes(swiftByteArray(data))
     }
-  
+    
     public class func hexFromBytes(bytes:[UInt8])-> String
     {
-      var string = ""
-      for byte in bytes
-      {
-        string += String(byte, radix: 16)
-      }
-      return string
+        var string = ""
+        for byte in bytes
+        {
+            string += String(byte, radix: 16)
+        }
+        return string
     }
-
+    
     public class func hexStringToByteArray(stringIn:String) -> Array<UInt8>
     {
         var hexString = ""
@@ -426,7 +444,7 @@ public class Unpacker
         
         return bytes
     }
-
+    
     class func charPairToByte(strIn:String) -> UInt8
     {
         var byte:UInt8 = 0
@@ -436,40 +454,40 @@ public class Unpacker
             byte = byte << 4
             switch(c)
             {
-                case "0":
-                    number = 0
-                case "1":
-                   number = 1
-                case "2":
-                    number = 2
-                case "3":
-                    number = 3
-                case "4":
-                    number = 4
-                case "5":
-                    number = 5
-                case "6":
-                    number = 6
-                case "7":
-                    number = 7
-                case "8":
-                    number = 8
-                case "9":
-                    number = 9
-                case "A":
-                    number = 10
-                case "B":
-                    number = 11
-                case "C":
-                    number = 12
-                case "D":
-                    number = 13
-                case "E":
-                    number = 14
-                case "F":
-                    number = 15
-                default:
-                    print("bad char \(c)")
+            case "0":
+                number = 0
+            case "1":
+                number = 1
+            case "2":
+                number = 2
+            case "3":
+                number = 3
+            case "4":
+                number = 4
+            case "5":
+                number = 5
+            case "6":
+                number = 6
+            case "7":
+                number = 7
+            case "8":
+                number = 8
+            case "9":
+                number = 9
+            case "A":
+                number = 10
+            case "B":
+                number = 11
+            case "C":
+                number = 12
+            case "D":
+                number = 13
+            case "E":
+                number = 14
+            case "F":
+                number = 15
+            default:
+                print("bad char \(c)")
             }
             byte = byte | number
         }
