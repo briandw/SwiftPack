@@ -38,11 +38,11 @@ public class Unpacker
         return bytes
     }
     
-    public class func unPackByteArray(bytes:Array<UInt8>)->AnyObject
+    public class func unPackByteArray(bytes:Array<UInt8>)->Any
     {
         var sliceBytes = bytes[0..<bytes.count]
         var bytesRead:Int = 0
-        var returnArray:Array<AnyObject> = []
+        var returnArray:Array<Any> = []
         var useArray = false
         
         while Int(bytesRead) < bytes.count
@@ -71,13 +71,13 @@ public class Unpacker
         return unPackByteArray(bytes)
     }
     
-    class func parseBytes(bytesIn:ArraySlice<UInt8>)->(value:AnyObject, bytesRead:Int)
+    class func parseBytes(bytesIn:ArraySlice<UInt8>)->(value:Any, bytesRead:Int)
     {
         let formatByte:UInt = UInt(bytesIn[0]) //Cast this up to a UInt so the switch doesn't crash
         let bytes = dropFirst(bytesIn)
         
         var bytesRead:Int = 1
-        var value:AnyObject = 0
+        var value:Any = 0
         
         switch formatByte
         {
@@ -318,7 +318,7 @@ public class Unpacker
         return (NSData(bytes:Array<UInt8>(slice), length:length), size)
     }
     
-    public class func parseMap(bytes:ArraySlice<UInt8>, headerSize:Int)->(value:Dictionary<String, AnyObject>, bytesRead:Int)
+    public class func parseMap(bytes:ArraySlice<UInt8>, headerSize:Int)->(value:Dictionary<String, Any>, bytesRead:Int)
     {
         var elements:Int = 0
         let headerBytes = Array<UInt8>(Array(bytes[0..<Int(headerSize)].reverse()))
@@ -329,10 +329,10 @@ public class Unpacker
         return (results.value, results.bytesRead+headerSize)
     }
     
-    public class func parseMapWithElements(bytesIn:ArraySlice<UInt8>, elements:Int)->(value:Dictionary<String, AnyObject>, bytesRead:Int)
+    public class func parseMapWithElements(bytesIn:ArraySlice<UInt8>, elements:Int)->(value:Dictionary<String, Any>, bytesRead:Int)
     {
         var bytes = bytesIn
-        var dict = Dictionary<String, AnyObject>(minimumCapacity: Int(elements))
+        var dict = Dictionary<String, Any>(minimumCapacity: Int(elements))
         var bytesRead:Int = 0
         for _ in 0..<elements
         {
@@ -344,7 +344,7 @@ public class Unpacker
             
             let valueResults = parseBytes(bytes)
             bytesRead += valueResults.bytesRead;
-            let value:AnyObject = valueResults.value
+            let value:Any = valueResults.value
             
             bytes = bytes[Int(valueResults.bytesRead)..<bytes.count]
             dict[key] = value
@@ -353,7 +353,7 @@ public class Unpacker
         return (dict, bytesRead)
     }
     
-    public class func parseArray(bytesIn:ArraySlice<UInt8>, headerSize:Int)->(value:AnyObject, bytesRead:Int)
+    public class func parseArray(bytesIn:ArraySlice<UInt8>, headerSize:Int)->(value:Any, bytesRead:Int)
     {
         var elements:Int = 0
         let headerBytes = Array<UInt8>(Array(bytesIn[0..<Int(headerSize)].reverse()))
@@ -363,11 +363,11 @@ public class Unpacker
         return (results.value, results.bytesRead+headerSize)
     }
     
-    public class func parseArrayWithElements(bytesIn:ArraySlice<UInt8>, elements:Int)->(value:AnyObject, bytesRead:Int)
+    public class func parseArrayWithElements(bytesIn:ArraySlice<UInt8>, elements:Int)->(value:Any, bytesRead:Int)
     {
         var bytesRead:Int = 0
         var bytes = bytesIn
-        var array = [AnyObject]()
+        var array = [Any]()
         for _ in 0..<elements
         {
             let results = parseBytes(bytes)
