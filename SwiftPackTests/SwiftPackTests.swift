@@ -42,7 +42,7 @@ class SwiftPack_Tests: XCTestCase {
     }
 	
     func testPacker() {
-        var data:Dictionary<String,Any>=[:]
+        var data:Dictionary<String,AnyObject>=[:]
         data["c"] = 3
         var packed = Packer.pack(data);
         

@@ -34,7 +34,7 @@ public class Packer
             localBytes = packArray(array, bytes: bytes)
             
         case let uint as UInt:
-            localBytes += packUInt(UInt64(uint))
+            localBytes += packUInt(uint)
             
         case let int as Int:
             localBytes += packInt(int)
@@ -59,7 +59,7 @@ public class Packer
         return localBytes
     }
     
-    class func packUInt(var uint:UInt64) -> [UInt8]
+    class func packUInt(var uint:UInt) -> [UInt8]
     {
         var size:Int!
         var formatByte: UInt8!
@@ -67,15 +67,15 @@ public class Packer
         case 0...127:
             return [UInt8(uint)]
             
-        case UInt64(UInt8.min)...UInt64(UInt8.max):
+        case UInt(UInt8.min)...UInt(UInt8.max):
             size = sizeof(UInt8.self)
             formatByte = 0xcc
             
-        case UInt64(UInt16.min)...UInt64(UInt16.max):
+        case UInt(UInt16.min)...UInt(UInt16.max):
             size = sizeof(UInt16.self)
             formatByte = 0xcd
             
-        case UInt64(UInt32.min)...UInt64(UInt32.max):
+        case UInt(UInt32.min)...UInt(UInt32.max):
             size = sizeof(Int32.self)
             formatByte = 0xce
             

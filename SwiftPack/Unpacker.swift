@@ -282,10 +282,28 @@ public class Unpacker
     
     public class func parseUInt(bytes:ArraySlice<UInt8>, length:Int)->UInt
     {
-        var uint:UInt = 0
+        var result:UInt = 0
         let intBytes = Array(bytes[0..<length].reverse())
-        memcpy(&uint, Array<UInt8>(intBytes), length)
-        return uint
+        switch length {
+        case 1:
+            var int:UInt8 = 0
+            memcpy(&int, Array<UInt8>(intBytes), length)
+            result = UInt(int)
+        case 2:
+            var int:UInt16 = 0
+            memcpy(&int, Array<UInt8>(intBytes), length)
+            result = UInt(int)
+        case 4:
+            var int:UInt32 = 0
+            memcpy(&int, Array<UInt8>(intBytes), length)
+            result = UInt(int)
+        default:
+            assert(length == 8)
+            var int:UInt64 = 0
+            memcpy(&int, Array<UInt8>(intBytes), length)
+            result = UInt(int)
+        }
+        return result
     }
     
     public class func parseFloat(bytes:ArraySlice<UInt8>)->Float
