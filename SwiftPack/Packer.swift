@@ -216,7 +216,7 @@ public class Packer
 
         for item in array
         {
-           localBytes = pack(item, bytes: localBytes)
+           localBytes += pack(item, bytes: localBytes)
         }
         
         return localBytes
