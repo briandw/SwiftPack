@@ -7,8 +7,6 @@
 //
 
 import Foundation
-import SwiftPack
-
 
 public class Packer
 {

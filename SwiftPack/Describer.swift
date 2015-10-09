@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftPack
 
 public class Describer
 {
@@ -104,7 +103,7 @@ public class Describer
     public class func describeMsgPackBytes(bytesIn:ArraySlice<UInt8>, indent:String) -> (description:String, bytesRead:Int)
     {
         let formatByte:UInt = UInt(bytesIn[0]) //Cast this up to a UInt so the switch doesn't crash
-        let bytes = dropFirst(bytesIn)
+        let bytes = bytesIn.dropFirst()
         
         var bytesRead:Int = 1;
         var description = ""

@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftPack
 
 ///util
 func error(errorMessage:String)
@@ -23,8 +22,8 @@ extension String {
     
     subscript (r: Range<Int>) -> String
         {
-            let start = advance(startIndex, r.startIndex)
-            let end = advance(startIndex, r.endIndex)
+            let start = startIndex.advancedBy(r.startIndex)
+            let end = startIndex.advancedBy(r.endIndex)
             return substringWithRange(Range(start: start, end: end))
     }
 }
@@ -74,7 +73,7 @@ public class Unpacker
     class func parseBytes(bytesIn:ArraySlice<UInt8>)->(value:Any, bytesRead:Int)
     {
         let formatByte:UInt = UInt(bytesIn[0]) //Cast this up to a UInt so the switch doesn't crash
-        let bytes = dropFirst(bytesIn)
+        let bytes = bytesIn.dropFirst()
         
         var bytesRead:Int = 1
         var value:Any = 0
