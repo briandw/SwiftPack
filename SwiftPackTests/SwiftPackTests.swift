@@ -27,23 +27,22 @@ class SwiftPack_Tests: XCTestCase {
     func testExample() {
         
         let simple = Unpacker.hexStringToByteArray(simpleHex)
-        let msgPackCase =  Unpacker.hexStringToByteArray(msgPackCaseHex)
-        
-        
-            print("Simple MsgPack")
-            var result:Any = Unpacker.unPackByteArray(simple)
-            print(result)
-            
-            //var bytes = pack(result)
-            
-            //print(bytes)
-            print("MsgPack test case")
-            result = Unpacker.unPackByteArray(msgPackCase)
-            print(result)
+        //let msgPackCase =  Unpacker.hexStringToByteArray(msgPackCaseHex)
+		
+		print("Simple MsgPack")
+		let result:Any = Unpacker.unPackByteArray(simple)
+		print(result)
+		
+		//var bytes = pack(result)
+		
+		//print(bytes)
+		//print("MsgPack test case")
+		//result = Unpacker.unPackByteArray(msgPackCase)
+		//print(result)
     }
-    
+	
     func testPacker() {
-        var data:Dictionary<String,Any>=[:]
+        var data:Dictionary<String,AnyObject>=[:]
         data["c"] = 3
         var packed = Packer.pack(data);
         
@@ -62,13 +61,11 @@ class SwiftPack_Tests: XCTestCase {
 
     func test_Packer_PacksFalse() {
         let packedFalse: [UInt8] = Packer.pack(false)
-
         XCTAssertEqual([0xc2], packedFalse)
     }
 
     func test_Packer_PacksTrue() {
         let packedTrue: [UInt8] = Packer.pack(true)
-
         XCTAssertEqual([0xc3], packedTrue)
     }
 
@@ -82,13 +79,23 @@ class SwiftPack_Tests: XCTestCase {
         XCTAssertEqual(25.5, Unpacker.unPackByteArray(packed) as! Double)
     }
 
-    func test_Packer_PacksNegativeDouble() {
-        let expected: [UInt8] = [0xcb, 0xc0, 0x39, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00]
-        XCTAssertEqual(expected, Packer.pack(Double(-25.5)))
-    }
+	func test_Packer_PacksNegativeDouble() {
+		let expected: [UInt8] = [0xcb, 0xc0, 0x39, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00]
+		XCTAssertEqual(expected, Packer.pack(Double(-25.5)))
+	}
+	
+	func test_Unpacker_UnpacksNegativeDouble() {
+		let packed: [UInt8] = [0xcb, 0xc0, 0x39, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00]
+		XCTAssertEqual(-25.5, Unpacker.unPackByteArray(packed) as! Double)
+	}
 
-    func test_Unpacker_UnpacksNegativeDouble() {
-        let packed: [UInt8] = [0xcb, 0xc0, 0x39, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00]
-        XCTAssertEqual(-25.5, Unpacker.unPackByteArray(packed) as! Double)
-    }
+	func test_Packer_PacksFloat() {
+		let expected: [UInt8] = [0xca, 0x41, 0xcc, 0x00, 0x00]
+		XCTAssertEqual(expected, Packer.pack(Float(25.5)))
+	}
+	
+	func test_Unpacker_UnpacksFloat() {
+		let packed: [UInt8] = [0xca, 0x41, 0xcc, 0x00, 0x00]
+		XCTAssertEqual(25.5, Unpacker.unPackByteArray(packed) as! Float)
+	}
 }

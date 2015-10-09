@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BFF266EA1B582812002323E6 /* PackerCollectionTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFF266E91B582812002323E6 /* PackerCollectionTestCase.swift */; };
 		D35D8C131A8418840039CC3B /* SwiftPack.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D365F9A019BD268500160701 /* SwiftPack.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D365F9A519BD268500160701 /* SwiftPack.h in Headers */ = {isa = PBXBuildFile; fileRef = D365F9A419BD268500160701 /* SwiftPack.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D365F9BF19BD269F00160701 /* Packer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D365F99719BD233100160701 /* Packer.swift */; };
@@ -59,6 +60,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BFF266E91B582812002323E6 /* PackerCollectionTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PackerCollectionTestCase.swift; sourceTree = "<group>"; };
 		D365F99719BD233100160701 /* Packer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Packer.swift; sourceTree = "<group>"; };
 		D365F99819BD233100160701 /* Unpacker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Unpacker.swift; sourceTree = "<group>"; };
 		D365F9A019BD268500160701 /* SwiftPack.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftPack.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -150,6 +152,7 @@
 			isa = PBXGroup;
 			children = (
 				D3C11F271ABB1CC6008757B1 /* DescriberTest.swift */,
+				BFF266E91B582812002323E6 /* PackerCollectionTestCase.swift */,
 				EA2A826B1A45B2220008BD65 /* PackerIntegerTestCase.swift */,
 				EA91194C1A489BD600904785 /* PackerUnsignedIntegerTestCase.swift */,
 				EA6606511A45F3CF0017C0C6 /* UnpackerIntegerTestCase.swift */,
@@ -336,6 +339,7 @@
 				D36CAE1E1AEE8CEF000E6D68 /* Unpacker.swift in Sources */,
 				EA91194F1A48A4CD00904785 /* UnpackerUnsignedIntegerTestCase.swift in Sources */,
 				EA6606521A45F3CF0017C0C6 /* UnpackerIntegerTestCase.swift in Sources */,
+				BFF266EA1B582812002323E6 /* PackerCollectionTestCase.swift in Sources */,
 				EA2A826C1A45B2220008BD65 /* PackerIntegerTestCase.swift in Sources */,
 				D37D778819BD694F0066F982 /* Packer.swift in Sources */,
 				EA91194D1A489BD600904785 /* PackerUnsignedIntegerTestCase.swift in Sources */,

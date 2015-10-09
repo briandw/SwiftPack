@@ -20,7 +20,7 @@ class DescriberTestCase: XCTestCase {
         let packed = Packer.packBin(simple, bytes:Array<UInt8>())
         print(Unpacker.hexFromBytes(packed))
         
-        let unpacked:AnyObject = Unpacker.unPackByteArray(packed);
+        let unpacked:Any = Unpacker.unPackByteArray(packed);
         //println(Unpacker.hexFromBytes(unpacked))
         
         let text1 = Describer.describeBytes(simple);
